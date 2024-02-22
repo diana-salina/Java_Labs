@@ -1,0 +1,8 @@
+package ru.nsu.salina;
+
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.*;
+
+public class Recorder {
