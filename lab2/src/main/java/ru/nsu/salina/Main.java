@@ -1,11 +1,11 @@
 package ru.nsu.salina;
 
-import ru.nsu.salina.factory.CommandFactory;
+import ru.nsu.salina.factory.*;
 
 public class Main {
     public static void main(String[] args) {
         Calculator calculator = new Calculator();
-        CommandFactory factory = new CommandFactory();
+        Factory factory = new CommandFactory();
         String path;
         try {
             if (!(args == null | args[0].isEmpty())){

@@ -1,7 +1,7 @@
 package ru.nsu.salina;
 
 import ru.nsu.salina.commands.Command;
-import ru.nsu.salina.factory.CommandFactory;
+import ru.nsu.salina.factory.Factory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.util.*;
 
 public class Calculator {
-    public Stack<Double> stack = new Stack<>();
-    public Map<String, Double> map = new HashMap<>();
-    public List<String> commands = new ArrayList<>();
-    public List<String> parameters = new ArrayList<>();
+    final private Stack<Double> stack = new Stack<>();
+    final private Map<String, Double> map = new HashMap<>();
+    final private List<String> commands = new ArrayList<>();
+    final private List<String> parameters = new ArrayList<>();
 
     public void getData(String path) {
         try {
@@ -23,7 +23,7 @@ public class Calculator {
         }
     }
 
-    public void DoTask(String commandsListPath, CommandFactory factory) {
+    public void DoTask(String commandsListPath, Factory factory) {
         Properties properties = new Properties();
         try {
             File file = new File(commandsListPath);
