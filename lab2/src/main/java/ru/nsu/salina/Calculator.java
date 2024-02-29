@@ -23,7 +23,7 @@ public class Calculator {
         }
     }
 
-    public void DoTask(String commandsListPath) {
+    public void DoTask(String commandsListPath, CommandFactory factory) {
         Properties properties = new Properties();
         try {
             File file = new File(commandsListPath);
@@ -36,7 +36,7 @@ public class Calculator {
         }
 
         for (int i = 0; i < this.commands.size(); ++i) {
-            Command currentCommand = CommandFactory.findCommand(this.commands.get(i), properties);
+            Command currentCommand = factory.findCommand(this.commands.get(i), properties);
             try {
                 currentCommand.executeCommand(this.map, this.stack, this.parameters.get(i));
             } catch (Exception ex) {

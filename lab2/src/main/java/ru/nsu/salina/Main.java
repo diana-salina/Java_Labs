@@ -1,8 +1,11 @@
 package ru.nsu.salina;
 
+import ru.nsu.salina.factory.CommandFactory;
+
 public class Main {
     public static void main(String[] args) {
         Calculator calculator = new Calculator();
+        CommandFactory factory = new CommandFactory();
         String path;
         try {
             if (!(args == null | args[0].isEmpty())){
@@ -14,6 +17,6 @@ public class Main {
             path = null;
         }
         calculator.getData(path);
-        calculator.DoTask("src\\main\\resources\\commands.properties");
+        calculator.DoTask("src\\main\\resources\\commands.properties", factory);
     }
 }

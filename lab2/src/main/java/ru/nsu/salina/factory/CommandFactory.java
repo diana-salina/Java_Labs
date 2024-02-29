@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 public class CommandFactory {
-    public static Command findCommand(String commandID, Properties properties) {
+    public Command findCommand(String commandID, Properties properties) {
         String className = properties.getProperty(commandID);
         try {
             if (className == null) {
