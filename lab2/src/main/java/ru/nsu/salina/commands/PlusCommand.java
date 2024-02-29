@@ -1,19 +1,18 @@
-package ru.nsu.salina.factory.commands;
+package ru.nsu.salina.commands;
 
 import ru.nsu.salina.exceptions.InvalidStackSizeException;
 import ru.nsu.salina.exceptions.NullStackException;
-import ru.nsu.salina.factory.Command;
 
-import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Stack;
 
-public class PrintCommand implements Command {
+public class PlusCommand implements Command {
     @Override
     public void executeCommand(Map<String, Double> map, Stack<Double> stack, String parameters) {
         if (stack == null) throw  new NullStackException("Stack do not exist");
-        DecimalFormat df = new DecimalFormat("#.##");
-        String formattedNumber = df.format(stack.lastElement());
-        System.out.println(formattedNumber);
+        if (stack.size() < 2) throw new InvalidStackSizeException("Stack is too small");
+        Double first = stack.pop();
+        Double second = stack.pop();
+        stack.push(first + second);
     }
 }

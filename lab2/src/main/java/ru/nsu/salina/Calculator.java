@@ -1,6 +1,6 @@
 package ru.nsu.salina;
 
-import ru.nsu.salina.factory.Command;
+import ru.nsu.salina.commands.Command;
 import ru.nsu.salina.factory.CommandFactory;
 
 import java.io.File;

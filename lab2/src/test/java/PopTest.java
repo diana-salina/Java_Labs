@@ -1,3 +1,6 @@
+import ru.nsu.salina.commands.DefineCommand;
+import ru.nsu.salina.commands.PopCommand;
+import ru.nsu.salina.commands.PushCommand;
 import ru.nsu.salina.exceptions.NullStackException;
 import ru.nsu.salina.factory.commands.*;
 

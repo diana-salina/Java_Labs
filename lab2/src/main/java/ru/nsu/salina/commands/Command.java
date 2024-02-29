@@ -1,4 +1,4 @@
-package ru.nsu.salina.factory;
+package ru.nsu.salina.commands;
 
 import java.util.Map;
 import java.util.Stack;

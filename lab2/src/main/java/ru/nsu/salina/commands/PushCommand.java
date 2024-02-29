@@ -1,8 +1,7 @@
-package ru.nsu.salina.factory.commands;
+package ru.nsu.salina.commands;
 
 import ru.nsu.salina.exceptions.NullMapException;
 import ru.nsu.salina.exceptions.NullStackException;
-import ru.nsu.salina.factory.Command;
 
 import java.util.Map;
 import java.util.Stack;

@@ -1,3 +1,5 @@
+import ru.nsu.salina.commands.DefineCommand;
+import ru.nsu.salina.commands.PushCommand;
 import ru.nsu.salina.factory.commands.*;
 
 import org.junit.*;

@@ -1,12 +1,14 @@
 package ru.nsu.salina.factory;
 
+import ru.nsu.salina.commands.Command;
 import ru.nsu.salina.exceptions.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
-public class CommandFactory {
+public class CommandFactory implements Factory{
+    @Override
     public Command findCommand(String commandID, Properties properties) {
         String className = properties.getProperty(commandID);
         try {
