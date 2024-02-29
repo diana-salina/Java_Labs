@@ -1,8 +1,5 @@
-import ru.nsu.salina.commands.DefineCommand;
-import ru.nsu.salina.commands.PopCommand;
-import ru.nsu.salina.commands.PushCommand;
 import ru.nsu.salina.exceptions.NullStackException;
-import ru.nsu.salina.factory.commands.*;
+import ru.nsu.salina.commands.*;
 
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
@@ -20,16 +17,16 @@ public class PopTest {
         String stackParameters = "a";
         Double expected = 2.3;
 
-        DefineCommand define = new DefineCommand();
+        Command define = new DefineCommand();
         define.executeCommand(map, stack, parameters);
-        PushCommand push = new PushCommand();
+        Command push = new PushCommand();
         push.executeCommand(map, stack,stackParameters);
         parameters = "b 4.6";
         stackParameters = "b";
         define.executeCommand(map, stack, parameters);
         push.executeCommand(map, stack,stackParameters);
 
-        PopCommand pop = new PopCommand();
+        Command pop = new PopCommand();
         pop.executeCommand(map, stack, "");
 
         assertEquals(stack.lastElement(), expected);
@@ -39,7 +36,7 @@ public class PopTest {
         Stack<Double> stack = new Stack<>();
         Map<String, Double> map = new HashMap<>();
 
-        PopCommand pop = new PopCommand();
+        Command pop = new PopCommand();
         try {
             pop.executeCommand(map, stack, "");
         } catch (NullStackException ex) {

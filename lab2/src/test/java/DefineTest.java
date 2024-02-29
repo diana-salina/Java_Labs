@@ -1,5 +1,4 @@
-import ru.nsu.salina.commands.DefineCommand;
-import ru.nsu.salina.factory.commands.*;
+import ru.nsu.salina.commands.*;
 
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
@@ -17,7 +16,7 @@ public class DefineTest {
         Double expectedValue = 2.3;
         String expectedName = "name";
 
-        DefineCommand define = new DefineCommand();
+        Command define = new DefineCommand();
         define.executeCommand(map, stack, parameters);
 
         assertEquals(map.get(expectedName), expectedValue);

@@ -1,10 +1,9 @@
-import ru.nsu.salina.commands.DefineCommand;
-import ru.nsu.salina.commands.DivCommand;
-import ru.nsu.salina.commands.PushCommand;
 import ru.nsu.salina.exceptions.DivisionByZeroException;
-import ru.nsu.salina.factory.commands.*;
+import ru.nsu.salina.commands.*;
 
 import org.junit.*;
+import ru.nsu.salina.exceptions.InvalidStackSizeException;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
@@ -20,16 +19,16 @@ public class DivTest {
         String stackParameters = "a";
         Double expected = 4.6 / 2.3;
 
-        DefineCommand define = new DefineCommand();
+        Command define = new DefineCommand();
         define.executeCommand(map, stack, parameters);
-        PushCommand push = new PushCommand();
+        Command push = new PushCommand();
         push.executeCommand(map, stack,stackParameters);
         parameters = "b 4.6";
         stackParameters = "b";
         define.executeCommand(map, stack, parameters);
         push.executeCommand(map, stack,stackParameters);
 
-        DivCommand div = new DivCommand();
+        Command div = new DivCommand();
         div.executeCommand(map, stack, "");
 
         assertEquals(stack.lastElement(), expected);
@@ -42,21 +41,41 @@ public class DivTest {
         String parameters = "a 0";
         String stackParameters = "a";
 
-        DefineCommand define = new DefineCommand();
+        Command define = new DefineCommand();
         define.executeCommand(map, stack, parameters);
-        PushCommand push = new PushCommand();
+        Command push = new PushCommand();
         push.executeCommand(map, stack,stackParameters);
         parameters = "b 4.6";
         stackParameters = "b";
         define.executeCommand(map, stack, parameters);
         push.executeCommand(map, stack,stackParameters);
 
-        DivCommand div = new DivCommand();
+        Command div = new DivCommand();
 
         try {
             div.executeCommand(map, stack, "");
         } catch (DivisionByZeroException ex) {
             assertEquals("Division by zero", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void test3() {
+        Stack<Double> stack = new Stack<>();
+        Map<String, Double> map = new HashMap<>();
+        String parameters = "a 2.3";
+        String stackParameters = "a";
+
+        Command define = new DefineCommand();
+        define.executeCommand(map, stack, parameters);
+        Command push = new PushCommand();
+        push.executeCommand(map, stack,stackParameters);
+
+        Command div = new DivCommand();
+        try {
+            div.executeCommand(map, stack, "");
+        } catch (InvalidStackSizeException ex) {
+            assertEquals("Stack is too small", ex.getMessage());
         }
     }
 }

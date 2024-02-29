@@ -5,8 +5,8 @@ import ru.nsu.salina.factory.*;
 public class Main {
     public static void main(String[] args) {
         Calculator calculator = new Calculator();
-        //Factory factory = new CommandFactory();
-        Factory cacheFactory = new CacheFactory();
+        Factory factory = new CommandFactory();
+        Factory cacheFactory = new CacheFactory(factory);
         String path;
         try {
             if (!(args == null | args[0].isEmpty())){
