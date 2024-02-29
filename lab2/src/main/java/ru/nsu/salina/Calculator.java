@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.util.*;
 
 public class Calculator {
-    final private Stack<Double> stack = new Stack<>();
-    final private Map<String, Double> map = new HashMap<>();
-    final private List<String> commands = new ArrayList<>();
-    final private List<String> parameters = new ArrayList<>();
+    private final Stack<Double> stack = new Stack<>();
+    private final Map<String, Double> map = new HashMap<>();
+    private final List<String> commands = new ArrayList<>();
+    private final List<String> parameters = new ArrayList<>();
 
     public void getData(String path) {
         try {
@@ -23,7 +23,7 @@ public class Calculator {
         }
     }
 
-    public void DoTask(String commandsListPath, Factory factory) {
+    public void doTask(String commandsListPath, Factory factory) {
         Properties properties = new Properties();
         try {
             File file = new File(commandsListPath);

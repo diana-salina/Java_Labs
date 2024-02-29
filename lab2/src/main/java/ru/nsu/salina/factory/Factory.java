@@ -1,7 +1,9 @@
 package ru.nsu.salina.factory;
 
+import ru.nsu.salina.commands.Command;
+
 import java.util.Properties;
 
 public interface Factory {
-    <T>T findCommand(String ID, Properties properties);
+    Command findCommand(String ID, Properties properties);
 }
