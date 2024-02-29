@@ -1,17 +1,19 @@
 package ru.nsu.salina;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Scanner;
-
 public class Main {
-    public static void main(String[] args) throws IOException {
-        try (Scanner scanner =
-                     new Scanner(
-                             new FileInputStream(args[0]))
-        ) {
-            Calculator calculator = new Calculator();
-            calculator.DoTask(scanner);
+    public static void main(String[] args) {
+        Calculator calculator = new Calculator();
+        String path;
+        try {
+            if (!(args == null | args[0].isEmpty())){
+                path = args[0];
+            } else {
+                path = null;
+            }
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException ex) {
+            path = null;
         }
+        calculator.getData(path);
+        calculator.DoTask("src\\main\\resources\\commands.properties");
     }
 }
