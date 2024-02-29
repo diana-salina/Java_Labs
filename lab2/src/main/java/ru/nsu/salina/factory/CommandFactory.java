@@ -11,9 +11,9 @@ public class CommandFactory {
         String className = properties.getProperty(commandID);
         try {
             if (className == null) {
-                throw new NoCommandException("No such command as: " + commandID);
+                throw new CommandException("No such command as: " + commandID);
             }
-        } catch (NoCommandException ex) {
+        } catch (CommandException ex) {
             System.out.println(ex.getMessage());
         }
         try {

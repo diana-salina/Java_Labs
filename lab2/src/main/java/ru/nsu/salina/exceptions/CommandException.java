@@ -1,7 +1,7 @@
 package ru.nsu.salina.exceptions;
 
-public class NoCommandException extends RuntimeException{
-    public NoCommandException(String message) {
+public class CommandException extends RuntimeException{
+    public CommandException(String message) {
         super(message);
     }
 
