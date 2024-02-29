@@ -1,4 +1,4 @@
-import ru.nsu.salina.exceptions.DivisionByZeroException;
+import ru.nsu.salina.exceptions.NullStackException;
 import ru.nsu.salina.factory.commands.*;
 
 import org.junit.*;
@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-public class DivTest {
+public class PopTest {
     @Test
     public void test1() {
         Stack<Double> stack = new Stack<>();
         Map<String, Double> map = new HashMap<>();
         String parameters = "a 2.3";
         String stackParameters = "a";
-        Double expected = 4.6 / 2.3;
+        Double expected = 2.3;
 
         DefineCommand define = new DefineCommand();
         define.executeCommand(map, stack, parameters);
@@ -26,34 +26,21 @@ public class DivTest {
         define.executeCommand(map, stack, parameters);
         push.executeCommand(map, stack,stackParameters);
 
-        DivCommand div = new DivCommand();
-        div.executeCommand(map, stack, "");
+        PopCommand pop = new PopCommand();
+        pop.executeCommand(map, stack, "");
 
         assertEquals(stack.lastElement(), expected);
     }
 
-    @Test
     public void test2() {
         Stack<Double> stack = new Stack<>();
         Map<String, Double> map = new HashMap<>();
-        String parameters = "a 0";
-        String stackParameters = "a";
 
-        DefineCommand define = new DefineCommand();
-        define.executeCommand(map, stack, parameters);
-        PushCommand push = new PushCommand();
-        push.executeCommand(map, stack,stackParameters);
-        parameters = "b 4.6";
-        stackParameters = "b";
-        define.executeCommand(map, stack, parameters);
-        push.executeCommand(map, stack,stackParameters);
-
-        DivCommand div = new DivCommand();
-
+        PopCommand pop = new PopCommand();
         try {
-            div.executeCommand(map, stack, "");
-        } catch (DivisionByZeroException ex) {
-            assertEquals("Division by zero", ex.getMessage());
+            pop.executeCommand(map, stack, "");
+        } catch (NullStackException ex) {
+            assertEquals("Stack do not exist", ex.getMessage());
         }
     }
 }
