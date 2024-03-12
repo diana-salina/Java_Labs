@@ -7,6 +7,7 @@ public abstract class Entity {
     private Integer y;
     private Integer width;
     private Integer height;
+    public Entity() {};
     public Entity(Integer x, Integer y, Integer width, Integer height) {
         this.x = x;
         this.y = y;
