@@ -8,12 +8,19 @@ public abstract class Entity {
     private Integer width;
     private Integer height;
     public Entity() {};
-    public Entity(Integer x, Integer y, Integer width, Integer height) {
+    public void setX(Integer x) {
         this.x = x;
+    }
+    public void setY(Integer y) {
         this.y = y;
-        this.height = height;
+    }
+    public void setWidth(Integer width) {
         this.width = width;
     }
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
     public Integer getX() {
         return this.x;
     }
