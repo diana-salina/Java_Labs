@@ -18,6 +18,12 @@ public class Model {
         this.doudle.setX((weight - doudle.getWidth()) / 2);
         this.doudle.setY(height / 20);
     };
+    public Doudle getDoudle() {
+        return this.doudle;
+    }
+    public ArrayList<Plank> getPlanks() {
+        return this.planks;
+    }
     public Integer getHeight() {
         return this.height;
     }

@@ -2,9 +2,13 @@ package ru.nsu.salina.view;
 
 import ru.nsu.salina.model.Model;
 import ru.nsu.salina.model.ModelListener;
+import ru.nsu.salina.model.objects.Plank;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 public class MainWindow extends JFrame implements ModelListener {
@@ -17,7 +21,8 @@ public class MainWindow extends JFrame implements ModelListener {
         try {
             setIcon("C:\\Users\\diana\\Desktop\\Java\\lab3\\src\\main\\resources\\images\\icon.png");
             setBack("C:\\Users\\diana\\Desktop\\Java\\lab3\\src\\main\\resources\\images\\back.png");
-            //TODO draw Doudle and planks correctly
+            setDoudle("C:\\Users\\diana\\Desktop\\Java\\lab3\\src\\main\\resources\\images\\doudle.png");
+            //setPlanks("C:\\Users\\diana\\Desktop\\Java\\lab3\\src\\main\\resources\\images\\panel.png");
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
         }
@@ -25,6 +30,7 @@ public class MainWindow extends JFrame implements ModelListener {
         setResizable(false);
         setLocationRelativeTo(null);
 
+        pack();
         onModelChanged();
     };
 
@@ -50,5 +56,15 @@ public class MainWindow extends JFrame implements ModelListener {
         contentPane.setPreferredSize(new Dimension(this.model.getWeight(), this.model.getHeight()));
         setContentPane(contentPane);
     }
-
+    private void setDoudle(String path) {
+        SpritePanel panel = new SpritePanel(path, this.model.getDoudle().getX(), this.model.getDoudle().getY());
+        add(panel);
+        //repaint();
+    }
+    private void setPlanks(String path) {
+        for (Plank i: this.model.getPlanks()) {
+            SpritePanel panel = new SpritePanel(path, i.getX(), i.getY());
+            add(panel);
+        }
+    }
 }
