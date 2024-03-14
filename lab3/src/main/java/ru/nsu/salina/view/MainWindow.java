@@ -16,7 +16,8 @@ public class MainWindow extends JFrame implements ModelListener {
         setSize(this.model.getWeight(), this.model.getHeight());
         try {
             setIcon("C:\\Users\\diana\\Desktop\\Java\\lab3\\src\\main\\resources\\images\\icon.png");
-            setBack("C:\\Users\\diana\\Desktop\\Java\\lab3\\src\\main\\resources\\images\\back1.jpg");
+            setBack("C:\\Users\\diana\\Desktop\\Java\\lab3\\src\\main\\resources\\images\\back.png");
+            //TODO draw Doudle and planks correctly
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
         }
@@ -49,4 +50,5 @@ public class MainWindow extends JFrame implements ModelListener {
         contentPane.setPreferredSize(new Dimension(this.model.getWeight(), this.model.getHeight()));
         setContentPane(contentPane);
     }
+
 }
