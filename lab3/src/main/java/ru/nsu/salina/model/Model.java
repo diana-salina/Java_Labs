@@ -6,10 +6,10 @@ import ru.nsu.salina.model.objects.Plank;
 import java.util.ArrayList;
 
 public class Model {
-    private Doudle doudle;
-    private ArrayList<Plank> planks;
-    private Integer height;
-    private Integer weight;
+    private final Doudle doudle;
+    private final ArrayList<Plank> planks;
+    private final Integer height;
+    private final Integer weight;
     public Model() {
         this.height = 640;
         this.weight =480;
@@ -18,6 +18,12 @@ public class Model {
         this.doudle.setX((weight - doudle.getWidth()) / 2);
         this.doudle.setY(height / 20);
     };
+    public Integer getHeight() {
+        return this.height;
+    }
+    public Integer getWeight() {
+        return this.weight;
+    }
     private void generatePlanks() {
 
     }
