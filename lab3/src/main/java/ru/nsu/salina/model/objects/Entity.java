@@ -1,25 +1,14 @@
 package ru.nsu.salina.model.objects;
 
-import ru.nsu.salina.model.MovementState;
-
 public abstract class Entity {
-    private Integer x;
-    private Integer y;
-    private Integer width;
-    private Integer height;
-    public Entity() {};
-    public void setX(Integer x) {
+    protected int x;
+    protected int y;
+    protected int width;
+    protected int height;
+    public Entity(int x, int y) {
         this.x = x;
-    }
-    public void setY(Integer y) {
         this.y = y;
-    }
-    public void setWidth(Integer width) {
-        this.width = width;
-    }
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
+    };
 
     public Integer getX() {
         return this.x;
@@ -34,17 +23,9 @@ public abstract class Entity {
         return this.height;
     }
 
-    public void move(Integer shift, MovementState state) {
-        switch(state) {
-            case UP:
-                this.y += shift;
-            case DOWN:
-                this.y -= shift;
-            case LEFT:
-                this.x -= shift;
-            case RIGHT:
-                this.x += shift;
-        }
+    public void move(int dx, int dy) {
+        x += dx;
+        y += dy;
     }
 
 }

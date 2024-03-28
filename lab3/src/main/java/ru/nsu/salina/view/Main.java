@@ -1,4 +1,4 @@
-package ru.nsu.salina;
+package ru.nsu.salina.view;
 
 import ru.nsu.salina.model.Model;
 import ru.nsu.salina.view.MainWindow;

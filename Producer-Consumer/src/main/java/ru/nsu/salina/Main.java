@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Integer N = scanner.nextInt();
+        int N = scanner.nextInt();
         int P = scanner.nextInt();
         int C = scanner.nextInt();
         Storage storage = new Storage(N);

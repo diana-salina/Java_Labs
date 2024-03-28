@@ -1,44 +1,46 @@
 package ru.nsu.salina;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Stack;
 
 public class Storage {
-    private final Integer size;
-    private final Stack<String> items;
-    private static Integer amount;
-    Storage(Integer size) {
-        this.items = new Stack<>();
+    private final int size;
+    private final Deque<String> items;
+    public Storage(Integer size) {
+        this.items = new ArrayDeque<>();
         this.size = size;
-        amount = 0;
     }
-    public void putInStorage(String producer) throws InterruptedException {
+    public void putInStorage(String message) throws InterruptedException {
         synchronized (this) {
-            if (!this.isFull()) {
-                amount++;
-                this.items.add(producer + "-" + amount);
-                this.notifyAll();
-                //System.out.println(producer + " added: " + producer + "-" + amount);
-            } else {
-                this.wait(50);
-            }
+            while(this.isFull()) { wait(); }
+            this.items.add(message);
+            System.out.println(this.items.getFirst());
+            this.notifyAll();
         }
     }
-    public void popItem(String consumer) throws InterruptedException {
+    public String popItem() throws InterruptedException {
         synchronized (this) {
-            if (!this.isEmpty()) {
-                String item = this.items.pop();
-                this.notifyAll();
-                amount--;
-                System.out.println(consumer + " consumes " + item);
-            } else {
-                this.wait(50);
-            }
+            while (this.isEmpty()) { wait(); }
+            String item = this.items.pop();
+            this.notifyAll();
+            return item;
         }
     }
-    public boolean isFull() {
-        return amount >= this.size;
+    public int getCount() {
+        synchronized (this) {
+            return this.items.size();
+        }
     }
-    public boolean isEmpty() {
-        return amount == 0;
+
+    private boolean isFull() {
+        synchronized (this) {
+            return this.getCount() >= this.size;
+        }
+    }
+    private boolean isEmpty() {
+        synchronized (this) {
+            return this.items.isEmpty();
+        }
     }
 }

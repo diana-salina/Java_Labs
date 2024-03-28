@@ -12,10 +12,14 @@ public class Consumer extends Thread{
         for (int i = 0; i < 10; ++i) {
             try {
                 sleep(1000);
-                this.storage.popItem(this.name);
+                String poped = this.storage.popItem();
+                this.consume(poped);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+    private void consume(String item) {
+        System.out.println(this.name + " consumes " + item);
     }
 }
