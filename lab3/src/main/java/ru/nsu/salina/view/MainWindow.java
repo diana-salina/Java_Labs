@@ -15,8 +15,6 @@ import java.io.IOException;
 public class MainWindow extends JFrame implements ActionListener {
     private Model model;
     private final Controller controller;
-    private final JPanel panel;
-    private final Timer timer;
     public MainWindow(Model model) {
         super("Space Way");
         this.model = model;
@@ -29,29 +27,26 @@ public class MainWindow extends JFrame implements ActionListener {
         setBackground(Color.WHITE);
         try {
             setIcon("resources\\images\\icon.png");
-            //setBack("resources\\images\\back.jpg");
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
         }
         setResizable(false);
-        this.panel = new JPanel() {
+        JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponents(g);
                 try {
                     setPlayer(g);
                     setMeteors(g);
+                    setDeath(g);
                 } catch (IOException | IllegalArgumentException ex) {
                     ex.printStackTrace();
                 }
                 setScore(g);
-                setDeath(g);
             }
         };
-
-        add(this.panel);
-
-        this.timer = new Timer(10, this);
+        add(panel);
+        Timer timer = new Timer(10, this);
         timer.start();
     };
 
@@ -95,10 +90,10 @@ public class MainWindow extends JFrame implements ActionListener {
             int score = (int) model.getScore();
             g.setFont(new Font("Arial", Font.BOLD, 30));
             if (best > score) {
-                g.drawString(":(, score: " + score + " BS: " + best, 90, 200);
+                g.drawString(":( score: " + score + " BS: " + best, 70, (this.model.getHeight() - 30) / 2);
             } else {
                 model.setBestScore(score);
-                g.drawString(":), best score: " + score, 90, 200);
+                g.drawString(":), best score: " + score, 90, (this.model.getHeight() - 30) / 2);
             }
         }
     }
@@ -106,17 +101,5 @@ public class MainWindow extends JFrame implements ActionListener {
     private void setIcon(String path) {
         Image icon = new ImageIcon(path).getImage();
         setIconImage(icon);
-    }
-    private void setBack(String path) {
-        JPanel contentPane = new JPanel() {
-            @Override
-            public void paintComponent(Graphics g) {
-                Image image = new ImageIcon(path).getImage();
-                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-
-        contentPane.setPreferredSize(new Dimension(this.model.getWidth(), this.model.getHeight()));
-        setContentPane(contentPane);
     }
 }
