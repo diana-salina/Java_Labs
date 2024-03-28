@@ -24,7 +24,7 @@ public class MainWindow extends JFrame implements ActionListener {
         setSize(this.model.getWidth(), this.model.getHeight());
         setLocationRelativeTo(null);
         addKeyListener(this.controller);
-        setBackground(Color.WHITE);
+        //setBackground(Color.WHITE);
         try {
             setIcon("resources\\images\\icon.png");
         } catch (IllegalArgumentException ex) {
@@ -36,6 +36,7 @@ public class MainWindow extends JFrame implements ActionListener {
             protected void paintComponent(Graphics g) {
                 super.paintComponents(g);
                 try {
+                    setBack(g);
                     setPlayer(g);
                     setMeteors(g);
                     setDeath(g);
@@ -59,7 +60,13 @@ public class MainWindow extends JFrame implements ActionListener {
         }
         repaint();
     }
-    private void setPlayer(Graphics g) throws IOException, IllegalArgumentException{
+    private void setBack(Graphics g) throws IOException, IllegalArgumentException {
+        Image m = ImageIO.read(new File("resources\\images\\back.jpg"));
+        if (m != null) {
+            g.drawImage(m, 0, 0, this);
+        }
+    }
+    private void setPlayer(Graphics g) throws IOException, IllegalArgumentException {
         Image m = ImageIO.read(new File("resources\\images\\player.png"));
         if (m != null) {
             g.drawImage(m, model.getPlayerX(), model.getPlayerY(), this);
