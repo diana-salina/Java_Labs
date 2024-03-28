@@ -55,7 +55,8 @@ public class MainWindow extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent ev) {
         this.model.updateMeteors();
         if (this.model.getReset()) {
-            this.model = this.controller.getModel();
+            this.model = new Model();
+            this.controller.resetModel(this.model);
             this.model.setReset(false);
         }
         repaint();

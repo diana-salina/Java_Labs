@@ -32,12 +32,12 @@ public class Controller implements KeyListener, ActionListener {
             dy = -4;
         } else if (keyCode == KeyEvent.VK_DOWN) {
             dy = 4;
-        } else if (keyCode == KeyEvent.VK_R && model.is_dead()) {
-            this.model = new Model();
+        } else if (this.model.is_dead() && keyCode == KeyEvent.VK_ENTER) {
             this.model.setReset(true);
             timer.start();
         }
     }
+    public void resetModel(Model model) {this.model = model;}
     @Override
     public void keyReleased(KeyEvent ev) {
         int keyCode = ev.getKeyCode();
