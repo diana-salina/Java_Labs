@@ -88,7 +88,7 @@ public class MainWindow extends JFrame implements ActionListener {
         g.drawString("" + (int) model.getScore(), 10, 25);
     }
     private void setDeath(Graphics g) {
-        if (model.is_dead()) {
+        if (model.isDead()) {
             int best = model.getBestScore();
             g.setColor(Color.RED);
             int score = (int) model.getScore();

@@ -14,6 +14,7 @@ public class Controller implements KeyListener, ActionListener {
     private final Timer timer;
     public Controller(Model model) {
         this.model = model;
+        dx = dy = 0;
         this.timer = new Timer(10, this);
         this.timer.start();
     }
@@ -31,7 +32,7 @@ public class Controller implements KeyListener, ActionListener {
             dy = -4;
         } else if (keyCode == KeyEvent.VK_DOWN) {
             dy = 4;
-        } else if (this.model.is_dead() && keyCode == KeyEvent.VK_ENTER) {
+        } else if (this.model.isDead() && keyCode == KeyEvent.VK_ENTER) {
             this.model.setReset(true);
             timer.start();
         }
@@ -49,7 +50,7 @@ public class Controller implements KeyListener, ActionListener {
     @Override
     public void actionPerformed(ActionEvent ev) {
         this.model.movePlayer(dx, dy);
-        if (model.is_dead()) {
+        if (model.isDead()) {
             this.timer.stop();
         } else model.increaseScore();
     }

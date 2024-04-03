@@ -72,7 +72,7 @@ public class Model {
     public ArrayList<Meteor> getMeteors() {
         return this.meteors;
     }
-    public boolean is_dead() {
+    public boolean isDead() {
         return this.death;
     }
     public double getScore() {
