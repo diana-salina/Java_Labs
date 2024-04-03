@@ -13,14 +13,14 @@ public class Model {
     private boolean death;
     private double score;
     private int bestScore;
-    private int height;
-    private int width;
+    private final int height;
+    private final int width;
     private boolean reset;
     public Model(){
         this.height = 400;
         this.width = 400;
         this.player = new Player(this.width / 2, this.height / 2);
-        this.meteors = new ArrayList<Meteor>();
+        this.meteors = new ArrayList<>();
         this.score = 0;
         this.death = false;
         this.reset = false;
@@ -69,8 +69,6 @@ public class Model {
     public int getPlayerY() {
         return this.player.getY();
     }
-    public int getPlayerHeight() {return this.player.getHeight();}
-    public int getPlayerWidth() {return this.player.getWidth();}
     public ArrayList<Meteor> getMeteors() {
         return this.meteors;
     }
@@ -89,7 +87,7 @@ public class Model {
         int x = random.nextInt(this.width);
 
         if(random.nextInt(100) < 7) {
-            if ((int)score % 20 < 10) {
+            if ((int)score % 20 < 3) {
                 this.meteors.add(new Meteor(x, this.height));
             } else {
                 this.meteors.add(new Meteor(x, 0));
@@ -97,12 +95,13 @@ public class Model {
         }
 
         for(Meteor meteor : this.meteors) {
-            if ((int) score % 20 < 10) {
+            if ((int) score % 8 < 4) {
                 meteor.move(0, -5);
             } else {
                 meteor.move(0, 5);
             }
-            if (meteor.is_hitted(this.player)) {
+
+            if (meteor.do_hit(this.player)) {
                 this.death = true;
             }
         }

@@ -1,6 +1,6 @@
 package ru.nsu.salina.model.objects;
 
-public abstract class Entity {
+public abstract class Entity implements GameUnit {
     protected int x;
     protected int y;
     protected int width;
@@ -9,20 +9,24 @@ public abstract class Entity {
         this.x = x;
         this.y = y;
     };
-
-    public Integer getX() {
+    @Override
+    public int getX() {
         return this.x;
     }
-    public Integer getY() {
+    @Override
+    public int getY() {
         return this.y;
     }
-    public Integer getWidth() {
+    @Override
+    public int getWidth() {
         return this.width;
     }
-    public Integer getHeight() {
+    @Override
+    public int getHeight() {
         return this.height;
     }
 
+    @Override
     public void move(int dx, int dy) {
         x += dx;
         y += dy;

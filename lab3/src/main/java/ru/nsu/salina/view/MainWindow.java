@@ -24,9 +24,8 @@ public class MainWindow extends JFrame implements ActionListener {
         setSize(this.model.getWidth(), this.model.getHeight());
         setLocationRelativeTo(null);
         addKeyListener(this.controller);
-        //setBackground(Color.WHITE);
         try {
-            setIcon("resources\\images\\icon.png");
+            setIcon();
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
         }
@@ -49,7 +48,7 @@ public class MainWindow extends JFrame implements ActionListener {
         add(panel);
         Timer timer = new Timer(10, this);
         timer.start();
-    };
+    }
 
     @Override
     public void actionPerformed(ActionEvent ev) {
@@ -72,8 +71,6 @@ public class MainWindow extends JFrame implements ActionListener {
         if (m != null) {
             g.drawImage(m, model.getPlayerX(), model.getPlayerY(), this);
         }
-        //g.setColor(Color.BLACK);
-        //g.fillRect(model.getPlayerX(), model.getPlayerY(), model.getPlayerWidth(), model.getPlayerHeight());
     }
 
     private void setMeteors(Graphics g) throws IOException, IllegalArgumentException {
@@ -81,7 +78,6 @@ public class MainWindow extends JFrame implements ActionListener {
         if (m != null) {
             for (Meteor meteor : model.getMeteors()) {
                 g.drawImage(m, meteor.getX(), meteor.getY(), this);
-                //g.fillRect(meteor.getX(), meteor.getY(), meteor.getWidth(), meteor.getHeight());
             }
         }
 
@@ -106,8 +102,8 @@ public class MainWindow extends JFrame implements ActionListener {
         }
     }
 
-    private void setIcon(String path) {
-        Image icon = new ImageIcon(path).getImage();
+    private void setIcon() {
+        Image icon = new ImageIcon("resources\\images\\icon.png").getImage();
         setIconImage(icon);
     }
 }

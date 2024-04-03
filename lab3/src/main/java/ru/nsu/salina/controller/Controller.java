@@ -1,7 +1,6 @@
 package ru.nsu.salina.controller;
 
 import ru.nsu.salina.model.Model;
-import ru.nsu.salina.view.MainWindow;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,5 +53,4 @@ public class Controller implements KeyListener, ActionListener {
             this.timer.stop();
         } else model.increaseScore();
     }
-    public Model getModel() { return this.model; }
 }

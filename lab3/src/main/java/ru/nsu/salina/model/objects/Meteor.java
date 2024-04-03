@@ -1,13 +1,13 @@
 package ru.nsu.salina.model.objects;
 
-public class Meteor extends Entity{
+public class Meteor extends Entity implements GameUnit{
     public Meteor(int x, int y) {
         super(x, y);
         this.height = 10;
         this.width = 10;
     }
 
-    public boolean is_hitted(Player player) {
+    public boolean do_hit(Player player) {
         int playerX = player.getX();
         int playerY = player.getY();
         int playerW = player.getWidth();
