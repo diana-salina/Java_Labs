@@ -86,8 +86,10 @@ public class Model {
 
         int x = random.nextInt(this.width);
 
+        int timeOfChange = 5;
+
         if(random.nextInt(100) < 7) {
-            if ((int)score % 20 < 3) {
+            if ((int)score % (2 * timeOfChange) < timeOfChange) {
                 this.meteors.add(new Meteor(x, this.height));
             } else {
                 this.meteors.add(new Meteor(x, 0));
@@ -95,7 +97,7 @@ public class Model {
         }
 
         for(Meteor meteor : this.meteors) {
-            if ((int) score % 8 < 4) {
+            if ((int) score % (2 * timeOfChange) < timeOfChange) {
                 meteor.move(0, -5);
             } else {
                 meteor.move(0, 5);

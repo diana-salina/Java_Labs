@@ -24,6 +24,7 @@ public class View extends Stage {
         int width = m.getWidth();
 
         setTitle("Space Way");
+        setIcon();
         setResizable(false);
 
         Group group = new Group();
@@ -50,6 +51,10 @@ public class View extends Stage {
 
         centerOnScreen();
         setScene(scene);
+    }
+    private void setIcon() {
+        Image icon = new Image("file:resources\\images\\icon.png");
+        getIcons().add(icon);
     }
     private void reset() {
         this.model = new Model();

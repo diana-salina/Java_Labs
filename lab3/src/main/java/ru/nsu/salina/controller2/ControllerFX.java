@@ -10,8 +10,8 @@ public class ControllerFX implements EventHandler<KeyEvent> {
     private Model model;
     private int dx, dy;
     private final AnimationTimer timer;
-    public ControllerFX(Model model) {
-        this.model = model;
+    public ControllerFX(Model m) {
+        this.model = m;
         dx = dy = 0;
         this.timer = new AnimationTimer() {
             @Override
