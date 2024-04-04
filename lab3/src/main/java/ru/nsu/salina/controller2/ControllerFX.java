@@ -31,13 +31,13 @@ public class ControllerFX implements EventHandler<KeyEvent> {
     public void handle(KeyEvent ev) {
         if (ev.getEventType() == KeyEvent.KEY_PRESSED) {
             KeyCode key = ev.getCode();
-            if (key == KeyCode.LEFT) {
+            if (key == KeyCode.LEFT || key == KeyCode.A) {
                 dx = -4;
-            } else if (key == KeyCode.RIGHT) {
+            } else if (key == KeyCode.RIGHT || key == KeyCode.D) {
                 dx = 4;
-            } else if (key == KeyCode.UP) {
+            } else if (key == KeyCode.UP || key == KeyCode.W) {
                 dy = -4;
-            } else if (key == KeyCode.DOWN) {
+            } else if (key == KeyCode.DOWN || key == KeyCode.S) {
                 dy = 4;
             } else if (this.model.isDead() && key == KeyCode.ENTER) {
                 this.model.setReset(true);
@@ -45,9 +45,11 @@ public class ControllerFX implements EventHandler<KeyEvent> {
             }
         } else if (ev.getEventType() == KeyEvent.KEY_RELEASED) {
             KeyCode key = ev.getCode();
-            if (key == KeyCode.LEFT || key == KeyCode.RIGHT) {
+            if (key == KeyCode.LEFT || key == KeyCode.RIGHT
+                    || key == KeyCode.A || key == KeyCode.D) {
                 dx = 0;
-            } else if (key == KeyCode.UP || key == KeyCode.DOWN) {
+            } else if (key == KeyCode.UP || key == KeyCode.DOWN
+                    || key == KeyCode.W || key == KeyCode.S) {
                 dy = 0;
             }
         }

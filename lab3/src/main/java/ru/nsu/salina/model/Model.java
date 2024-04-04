@@ -107,6 +107,13 @@ public class Model {
                 this.death = true;
             }
         }
+        final int meteorsLimit = 50;
+        if (meteors.size() > meteorsLimit) {
+            int delNumb = random.nextInt(10);
+            for (int i = 0; i < delNumb; ++i) {
+                meteors.remove(i);
+            }
+        }
     }
     public void movePlayer(int dx, int dy) {
         this.player.move(dx, dy);

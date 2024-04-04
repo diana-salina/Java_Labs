@@ -15,7 +15,7 @@ public class Controller implements KeyListener, ActionListener {
     public Controller(Model model) {
         this.model = model;
         dx = dy = 0;
-        this.timer = new Timer(10, this);
+        this.timer = new Timer(7, this);
         this.timer.start();
     }
     @Override

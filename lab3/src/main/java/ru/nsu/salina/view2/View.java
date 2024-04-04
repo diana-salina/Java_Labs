@@ -1,5 +1,7 @@
 package ru.nsu.salina.view2;
 
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import ru.nsu.salina.model.Model;
@@ -66,7 +68,10 @@ public class View extends Stage {
             setBack(gc);
             setPlayer(gc);
             setMeteors(gc);
-            if (model.isDead()) { setDeath(gc); }
+            if (model.isDead()) {
+                setDepressedBack(gc);
+                setDeath(gc);
+            }
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
         }
@@ -92,13 +97,13 @@ public class View extends Stage {
 
     }
     private void setScore(GraphicsContext gc) {
-        gc.setFill(javafx.scene.paint.Color.BLACK);
+        gc.setFill(Color.BLACK);
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 30));
         gc.fillText("" + (int) model.getScore(), 10, 25);
     }
     private void setDeath(GraphicsContext gc) {
         int best = model.getBestScore();
-        gc.setFill(javafx.scene.paint.Color.RED);
+        gc.setFill(Color.RED);
         int score = (int) model.getScore();
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 30));
         int height = (this.model.getHeight() - 30) / 2;
@@ -108,5 +113,11 @@ public class View extends Stage {
             model.setBestScore(score);
             gc.fillText(":), best score: " + score, 90, height);
         }
+    }
+
+    private void setDepressedBack(GraphicsContext gc) {
+        gc.setFill(Color.rgb(0, 0, 0, 0.5));
+        gc.fillRect(0, 0, this.model.getWidth(), this.model.getHeight());
+
     }
 }

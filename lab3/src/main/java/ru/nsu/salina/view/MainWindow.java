@@ -46,7 +46,7 @@ public class MainWindow extends JFrame implements ActionListener {
             }
         };
         add(panel);
-        Timer timer = new Timer(10, this);
+        Timer timer = new Timer(7, this);
         timer.start();
     }
 
