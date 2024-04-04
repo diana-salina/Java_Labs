@@ -101,10 +101,10 @@ public class MainWindow extends JFrame implements ActionListener {
                 text = ":), best score: " + score;
             }
 
-            double textWidth = (double) g.getFont().getSize() / 2 * text.length();
-            double x = (this.model.getWidth() - textWidth) / 2;
-            double y = (double) this.getHeight() / 2;
-            g.drawString(text, (int)x, (int)y);
+            int textWidth = g.getFont().getSize() / 2 * text.length();
+            int x = (this.model.getWidth() - textWidth) / 2;
+            int y = this.getHeight() / 2;
+            g.drawString(text, x, y);
 
         }
     }
