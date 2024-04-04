@@ -91,6 +91,7 @@ public class View extends Stage {
     private void setMeteors(GraphicsContext gc) throws IllegalArgumentException {
         for (Meteor meteor : model.getMeteors()) {
             setObject(gc, "file:resources\\images\\meteor.png", meteor.getX(), meteor.getY());
+
         }
 
     }

@@ -83,20 +83,18 @@ public class Model {
     }
     public void updateMeteors() {
         Random random = new Random();
-
-        int x = random.nextInt(this.width);
-
+        int newX = random.nextInt(this.width);
         int timeOfChange = 5;
 
-        if(random.nextInt(100) < 7) {
-            if ((int)score % (2 * timeOfChange) < timeOfChange) {
-                this.meteors.add(new Meteor(x, this.height));
+        if (random.nextInt(100) < 7) {
+            if ((int) score % (2 * timeOfChange) < timeOfChange) {
+                this.meteors.add(new Meteor(newX, this.height));
             } else {
-                this.meteors.add(new Meteor(x, 0));
+                this.meteors.add(new Meteor(newX, 0));
             }
         }
 
-        for(Meteor meteor : this.meteors) {
+        for (Meteor meteor : this.meteors) {
             if ((int) score % (2 * timeOfChange) < timeOfChange) {
                 meteor.move(0, -5);
             } else {
@@ -106,17 +104,33 @@ public class Model {
             if (meteor.do_hit(this.player)) {
                 this.death = true;
             }
+
+            int x = meteor.getX();
+            int y = meteor.getY();
+            if (x > width || x < 0 || y > height || y < 0) {
+                meteor.setMute(true);
+            }
         }
         controlMeteorsAmount(random);
     }
 
     private void controlMeteorsAmount(Random random) {
+        int i = 0;
+        while (i < meteors.size()) {
+            Meteor meteor = meteors.get(i);
+            if (meteor.getMute()) {
+                meteors.remove(i);
+            } else {
+                ++i;
+            }
+        }
+
         final int meteorsLimit = 40;
         if (meteors.size() > meteorsLimit) {
             int delNumb = random.nextInt(10);
-            for (int i = 0; i < delNumb; ++i) {
+            for (int j = 0; j < delNumb && delNumb < meteors.size(); ++j) {
                 try {
-                    meteors.remove(i);
+                    meteors.remove(j);
                 } catch (IndexOutOfBoundsException ex) {
                     ex.printStackTrace();
                 }
