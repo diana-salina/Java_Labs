@@ -1,7 +1,6 @@
 package ru.nsu.salina.view2;
 
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import ru.nsu.salina.model.Model;
@@ -39,7 +38,6 @@ public class View extends Stage {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                model.updateMeteors();
                 if (model.getReset()) {
                     reset();
                 }
@@ -106,13 +104,18 @@ public class View extends Stage {
         gc.setFill(Color.RED);
         int score = (int) model.getScore();
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 30));
-        int height = (this.model.getHeight() - 30) / 2;
+        String text;
         if (best > score) {
-            gc.fillText(":( score: " + score + " BS: " + best, 70, height);
+            text = "score: " + score + " BS: " + best;
         } else {
             model.setBestScore(score);
-            gc.fillText(":), best score: " + score, 90, height);
+            text = "New best score: " + score;
         }
+
+        double textWidth = gc.getFont().getSize() / 2 * text.length();
+        double x = (this.model.getWidth() - textWidth) / 2;
+        double y = this.getHeight() / 2;
+        gc.fillText(text, x, y);
     }
 
     private void setDepressedBack(GraphicsContext gc) {

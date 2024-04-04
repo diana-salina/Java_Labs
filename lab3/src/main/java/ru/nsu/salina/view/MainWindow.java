@@ -92,13 +92,20 @@ public class MainWindow extends JFrame implements ActionListener {
             int best = model.getBestScore();
             g.setColor(Color.RED);
             int score = (int) model.getScore();
+            String text;
             g.setFont(new Font("Arial", Font.BOLD, 30));
             if (best > score) {
-                g.drawString(":( score: " + score + " BS: " + best, 70, (this.model.getHeight() - 30) / 2);
+                text = ":( score: " + score + " BS: " + best;
             } else {
                 model.setBestScore(score);
-                g.drawString(":), best score: " + score, 90, (this.model.getHeight() - 30) / 2);
+                text = ":), best score: " + score;
             }
+
+            double textWidth = (double) g.getFont().getSize() / 2 * text.length();
+            double x = (this.model.getWidth() - textWidth) / 2;
+            double y = (double) this.getHeight() / 2;
+            g.drawString(text, (int)x, (int)y);
+
         }
     }
 

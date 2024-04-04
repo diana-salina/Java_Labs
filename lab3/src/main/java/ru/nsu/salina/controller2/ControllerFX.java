@@ -17,6 +17,7 @@ public class ControllerFX implements EventHandler<KeyEvent> {
             @Override
             public void handle(long now) {
                 model.movePlayer(dx, dy);
+                model.updateMeteors();
                 if (model.isDead()) {
                     timer.stop();
                 } else {
