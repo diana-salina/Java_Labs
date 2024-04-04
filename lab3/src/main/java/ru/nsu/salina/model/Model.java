@@ -107,7 +107,8 @@ public class Model {
 
             int x = meteor.getX();
             int y = meteor.getY();
-            if (x > width || x < 0 || y > height || y < 0) {
+            int meteorHeight = meteor.getHeight();
+            if (x > width || x < 0 || y > (height + meteorHeight) || y < -meteorHeight) {
                 meteor.setMute(true);
             }
         }
