@@ -111,10 +111,10 @@ public class Model {
                 meteor.setMute(true);
             }
         }
-        controlMeteorsAmount(random);
+        controlMeteorsAmount();
     }
 
-    private void controlMeteorsAmount(Random random) {
+    private void controlMeteorsAmount() {
         int i = 0;
         while (i < meteors.size()) {
             Meteor meteor = meteors.get(i);
@@ -122,18 +122,6 @@ public class Model {
                 meteors.remove(i);
             } else {
                 ++i;
-            }
-        }
-
-        final int meteorsLimit = 40;
-        if (meteors.size() > meteorsLimit) {
-            int delNumb = random.nextInt(10);
-            for (int j = 0; j < delNumb && delNumb < meteors.size(); ++j) {
-                try {
-                    meteors.remove(j);
-                } catch (IndexOutOfBoundsException ex) {
-                    ex.printStackTrace();
-                }
             }
         }
     }
