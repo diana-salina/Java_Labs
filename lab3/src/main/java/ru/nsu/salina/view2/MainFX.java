@@ -9,7 +9,7 @@ public class MainFX extends Application {
         launch(args);
     }
     @Override
-    public void start(Stage mainView) throws Exception {
+    public void start(Stage mainView) {
         Model model = new Model();
         mainView = new View(model);
         mainView.show();
