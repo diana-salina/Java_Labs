@@ -9,7 +9,7 @@ public class Meteor extends Entity implements GameUnit{
         this.mute = false;
     }
 
-    public boolean do_hit(Player player) {
+    public boolean doHit(Player player) {
         int playerX = player.getX();
         int playerY = player.getY();
         int playerW = player.getWidth();

@@ -5,13 +5,22 @@ import javafx.stage.Stage;
 import ru.nsu.salina.model.Model;
 
 public class MainFX extends Application {
+    Model model = new Model();
     public static void main(String[] args) {
         launch(args);
     }
     @Override
     public void start(Stage mainView) {
-        Model model = new Model();
         mainView = new View(model);
         mainView.show();
     }
+    @Override
+    public void stop() {
+        try {
+            model.close();
+        } catch (InterruptedException ex) {
+            throw new RuntimeException((ex));
+        }
+    }
+
 }

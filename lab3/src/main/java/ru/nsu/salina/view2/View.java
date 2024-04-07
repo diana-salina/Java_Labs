@@ -5,6 +5,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import ru.nsu.salina.model.Model;
 import ru.nsu.salina.controller2.ControllerFX;
+import ru.nsu.salina.model.ModelListener;
 import ru.nsu.salina.model.objects.Meteor;
 
 import javafx.animation.AnimationTimer;
@@ -15,14 +16,16 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-public class View extends Stage {
-    private Model model;
-    private final ControllerFX controller;
+public class View extends Stage implements ModelListener {
+    private final Model model;
+    private final GraphicsContext gc;
+    private final int height = 400;
+    private final int width = 400;
     public View(Model m) {
         super();
         this.model = m;
-        int height = m.getHeight();
-        int width = m.getWidth();
+        model.setHeight(height + 30);
+        model.setWidth(width + 10);
 
         setTitle("Space Way");
         setIcon();
@@ -33,18 +36,18 @@ public class View extends Stage {
         Canvas canvas = new Canvas(width, height);
         group.getChildren().add(canvas);
 
-        this.controller = new ControllerFX(this.model);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
+        ControllerFX controller = new ControllerFX(this.model);
+        this.gc = canvas.getGraphicsContext2D();
         AnimationTimer timer = new AnimationTimer() {
             @Override
-            public void handle(long now) {
-                if (model.getReset()) {
-                    reset();
+            public void handle(long l) {
+                synchronized (model) {
+                    draw(gc);
                 }
-                draw(gc);
             }
         };
         timer.start();
+        this.model.setListener(this);
 
         scene.setOnKeyPressed(controller);
         scene.setOnKeyReleased(controller);
@@ -52,14 +55,15 @@ public class View extends Stage {
         centerOnScreen();
         setScene(scene);
     }
+    @Override
+    public void onModelChanged() {
+        //draw(this.gc);
+    }
+
+
     private void setIcon() {
         Image icon = new Image("file:resources\\images\\icon.png");
         getIcons().add(icon);
-    }
-    private void reset() {
-        this.model = new Model();
-        this.controller.resetModel(this.model);
-        this.model.setReset(false);
     }
     private void draw(GraphicsContext gc) {
         try {

@@ -2,28 +2,31 @@ package ru.nsu.salina.view;
 
 import ru.nsu.salina.controller.Controller;
 import ru.nsu.salina.model.Model;
+import ru.nsu.salina.model.ModelListener;
 import ru.nsu.salina.model.objects.Meteor;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
-public class MainWindow extends JFrame implements ActionListener {
-    private Model model;
-    private final Controller controller;
-    public MainWindow(Model model) {
+public class MainWindow extends JFrame implements ModelListener {
+    private final Model model;
+    private final int height = 420;
+    private final int width= 420;
+    public MainWindow(Model m) {
         super("Space Way");
-        this.model = model;
-        this.controller = new Controller(this.model);
+        model = m;
+        model.setHeight(420);
+        model.setWidth(420);
+        Controller controller = new Controller(this.model);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(this.model.getWidth(), this.model.getHeight());
+        setSize(width, height);
         setLocationRelativeTo(null);
-        addKeyListener(this.controller);
+        addKeyListener(controller);
+        model.setListener(this);
         try {
             setIcon();
         } catch (IllegalArgumentException ex) {
@@ -46,19 +49,11 @@ public class MainWindow extends JFrame implements ActionListener {
             }
         };
         add(panel);
-        Timer timer = new Timer(7, this);
-        timer.start();
-    }
 
+    }
     @Override
-    public void actionPerformed(ActionEvent ev) {
-        this.model.updateMeteors();
-        if (this.model.getReset()) {
-            this.model = new Model();
-            this.controller.resetModel(this.model);
-            this.model.setReset(false);
-        }
-        repaint();
+    public void onModelChanged() {
+        SwingUtilities.invokeLater(this::repaint);
     }
     private void setBack(Graphics g) throws IOException, IllegalArgumentException {
         Image m = ImageIO.read(new File("resources\\images\\back.jpg"));

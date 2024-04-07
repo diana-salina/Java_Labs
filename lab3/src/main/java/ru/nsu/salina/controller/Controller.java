@@ -1,22 +1,24 @@
 package ru.nsu.salina.controller;
 
+import ru.nsu.salina.model.Direction;
 import ru.nsu.salina.model.Model;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import javax.swing.*;
+import java.awt.event.*;
 
-public class Controller implements KeyListener, ActionListener {
-    private Model model;
-    private int dx, dy;
-    private final Timer timer;
+public class Controller extends WindowAdapter implements KeyListener {
+    private final Model model;
     public Controller(Model model) {
         this.model = model;
-        dx = dy = 0;
-        this.timer = new Timer(7, this);
-        this.timer.start();
+    }
+    @Override
+    public void windowClosing(WindowEvent event) {
+        try {
+            model.close();
+        } catch (InterruptedException ex) {
+            throw new RuntimeException((ex));
+        }
+        event.getWindow().setVisible(false);
+        event.getWindow().dispose();
     }
     @Override
     public void keyTyped(KeyEvent ev) {
@@ -25,33 +27,24 @@ public class Controller implements KeyListener, ActionListener {
     public void keyPressed(KeyEvent ev) {
         int keyCode = ev.getKeyCode();
         if (keyCode == KeyEvent.VK_LEFT) {
-            dx = -4;
+            model.setPlayerDirection(Direction.LEFT);
         } else if (keyCode == KeyEvent.VK_RIGHT) {
-            dx = 4;
+            model.setPlayerDirection(Direction.RIGHT);
         } else if (keyCode == KeyEvent.VK_UP) {
-            dy = -4;
+            model.setPlayerDirection(Direction.UP);
         } else if (keyCode == KeyEvent.VK_DOWN) {
-            dy = 4;
+            model.setPlayerDirection(Direction.DOWN);
         } else if (this.model.isDead() && keyCode == KeyEvent.VK_ENTER) {
             this.model.setReset(true);
-            timer.start();
         }
     }
-    public void resetModel(Model model) {this.model = model;}
     @Override
     public void keyReleased(KeyEvent ev) {
         int keyCode = ev.getKeyCode();
         if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT) {
-            dx = 0;
+            model.setPlayerDirection(Direction.STAY_X);
         } else if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN) {
-            dy = 0;
+            model.setPlayerDirection(Direction.STAY_Y);
         }
-    }
-    @Override
-    public void actionPerformed(ActionEvent ev) {
-        this.model.movePlayer(dx, dy);
-        if (model.isDead()) {
-            this.timer.stop();
-        } else model.increaseScore();
     }
 }

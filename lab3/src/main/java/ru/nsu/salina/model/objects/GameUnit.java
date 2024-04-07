@@ -7,5 +7,5 @@ public interface GameUnit {
     int getWidth();
     int getHeight();
 
-    void move(int dx, int dy);
+    void move();
 }

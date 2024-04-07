@@ -7,15 +7,18 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Model {
-    private final Player player;
-    private final ArrayList<Meteor> meteors;
+public class Model implements AutoCloseable{
+    private Player player;
+    private ArrayList<Meteor> meteors;
     private boolean death;
     private double score;
     private int bestScore;
-    private final int height;
-    private final int width;
+    private int height;
+    private int width;
     private boolean reset;
+    private final Thread thread;
+    private final long timeout = 10;
+    private ModelListener listener;
     public Model(){
         this.height = 400;
         this.width = 400;
@@ -29,13 +32,63 @@ public class Model {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        thread = new Ticker(this);
+        thread.start();
+        generate();
     }
+    public synchronized void generate() {
+        if (isDead()) {
+            if (reset) {
+                player = new Player(this.width / 2, this.height / 2);
+                meteors = new ArrayList<>();
+                score = 0;
+                setReset(false);
+                death = false;
+            }
+        } else {
+            this.player.move();
+            controlPlayer();
+            updateMeteors();
+            increaseScore();
+        }
+        notifyUnsafe();
+    }
+
+    private synchronized void controlPlayer() {
+        if (this.player.getX() < 0) {
+            player.setX(0);
+        } else if (this.player.getX() > (this.width - (int)(player.getWidth() * 2.2))) {
+            player.setX(this.width - (int)(player.getWidth() * 2.2));
+        }
+        if (this.player.getY() < 0) {
+            player.setY(0);
+        } else if (this.player.getY() > (this.height - 3 * player.getHeight())) {
+            player.setY(this.height - 3 * player.getHeight());
+        }
+
+        notifyUnsafe();
+    }
+
+    public void setListener(ModelListener listener) {
+        this.listener = listener;
+    }
+
+    private void notifyUnsafe() {
+        if (listener != null) {
+            listener.onModelChanged();
+        }
+    }
+
     public void setReset(boolean r) {
         this.reset = r;
     }
-    public boolean getReset() { return this.reset; }
-    public void increaseScore() {
+    public synchronized void setPlayerDirection(Direction d) {
+        this.player.setDiraction(d);
+        notifyUnsafe();
+    }
+    private synchronized void increaseScore() {
         this.score += 0.015;
+        notifyUnsafe();
     }
     private int getBestScoreFromList() throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader("best_score.txt"))) {
@@ -47,13 +100,14 @@ public class Model {
         return 0;
     }
 
-    public void setBestScore(int score) {
+    public synchronized void setBestScore(int score) {
         this.bestScore = score;
         try {
             updateScoreFile();
         } catch(IOException ex) {
             ex.printStackTrace();
         }
+        notifyUnsafe();
     }
 
     private void updateScoreFile() throws IOException {
@@ -81,10 +135,11 @@ public class Model {
     public int getBestScore() {
         return this.bestScore;
     }
-    public void updateMeteors() {
+    private synchronized void updateMeteors() {
         Random random = new Random();
         int newX = random.nextInt(this.width);
         int timeOfChange = 5;
+        controlMeteorsAmount();
 
         if (random.nextInt(100) < 7) {
             if ((int) score % (2 * timeOfChange) < timeOfChange) {
@@ -96,12 +151,13 @@ public class Model {
 
         for (Meteor meteor : this.meteors) {
             if ((int) score % (2 * timeOfChange) < timeOfChange) {
-                meteor.move(0, -5);
+                meteor.setDiraction(Direction.UP);
             } else {
-                meteor.move(0, 5);
+                meteor.setDiraction(Direction.DOWN);
             }
+            meteor.move();
 
-            if (meteor.do_hit(this.player)) {
+            if (meteor.doHit(this.player)) {
                 this.death = true;
             }
 
@@ -112,10 +168,10 @@ public class Model {
                 meteor.setMute(true);
             }
         }
-        controlMeteorsAmount();
+        notifyUnsafe();
     }
 
-    private void controlMeteorsAmount() {
+    private synchronized void controlMeteorsAmount() {
         int i = 0;
         while (i < meteors.size()) {
             Meteor meteor = meteors.get(i);
@@ -125,9 +181,22 @@ public class Model {
                 ++i;
             }
         }
+        notifyUnsafe();
     }
 
-    public void movePlayer(int dx, int dy) {
-        this.player.move(dx, dy);
+    public long getTimeout() {
+        return timeout;
+    }
+    @Override
+    public void close() throws InterruptedException {
+        thread.interrupt();
+        thread.join();
+    }
+
+    public void setHeight(int h) {
+        this.height = h;
+    }
+    public void setWidth(int w) {
+        this.width = w;
     }
 }
