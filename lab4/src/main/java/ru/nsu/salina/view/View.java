@@ -16,7 +16,24 @@ public class View extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(width, height);
         setLocationRelativeTo(null);
-        //addKeyListener(controller); TODO controller listen to JSlider
+        JPanel panel = new JPanel();
+        addSliders(panel);
+        add(panel);
+    }
 
+    private void addSliders(JPanel panel) {
+        JSlider dealerSlider = createSlider();
+
+
+        panel.add(dealerSlider);
+    }
+
+    private JSlider createSlider() {
+        BoundedRangeModel model = new DefaultBoundedRangeModel(80, 0, 0, 80);
+        JSlider slider = new JSlider(model);
+        slider.setPaintLabels(true);
+        slider.setMajorTickSpacing(10);
+        slider.addChangeListener(controller);
+        return slider;
     }
 }
