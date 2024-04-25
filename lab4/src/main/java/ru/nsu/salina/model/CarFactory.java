@@ -10,15 +10,16 @@ import ru.nsu.salina.model.suppliers.Supplier;
 import ru.nsu.salina.model.workers.Worker;
 import ru.nsu.salina.threadpool.ThreadPool;
 
-import java.io.BufferedReader;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static java.lang.Integer.parseInt;
 
-public class CarFactory {
+public class CarFactory extends Thread{
     private LinkedList<Dealer> dealers;
     private ThreadPool workers;
     private CarController carController;
@@ -39,8 +40,11 @@ public class CarFactory {
 
 
         try {
-            properties.load(CarFactory.class.getClassLoader()
-                    .getResourceAsStream("configFile.properties"));
+            File file = new File(configFile);
+            if (!file.exists()) {
+                throw new FileNotFoundException();
+            }
+            properties.load(new FileReader(file));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -48,7 +52,55 @@ public class CarFactory {
         createThreads();
         carController = new CarController(carStorage, workers);
     }
+    @Override
+    public void run() {
+        for (Dealer dealer : dealers) dealer.start();
+        for (Supplier<Accessory> supplier : accessorySuppliers) supplier.start();
+        for (Supplier<Body> supplier : bodySuppliers) supplier.start();
+        for (Supplier<Engine> supplier : engineSuppliers) supplier.start();
+        workers.start();
+        carController.start();
+    }
+    public void closeThreads() {
+        for (Dealer dealer : dealers) dealer.interrupt();
+        for (Supplier<Accessory> supplier : accessorySuppliers) supplier.interrupt();
+        for (Supplier<Body> supplier : bodySuppliers) supplier.interrupt();
+        for (Supplier<Engine> supplier : engineSuppliers) supplier.interrupt();
+        workers.interrupt();
+        carController.interrupt();
+    }
 
+    private void startThreads() {
+    }
+
+    public synchronized void resetWorkersDelay(Delay delay) {
+        workers.setDelay(delay);
+        notifyAll();
+    }
+    public synchronized void resetDealersDelay(Delay delay) {
+        for (Dealer dealer : dealers) {
+            dealer.setDelay(delay);
+        }
+        notifyAll();
+    }
+    public synchronized void resetAccessorySuppliersDelay(Delay delay) {
+        for (Supplier<Accessory> supplier : accessorySuppliers) {
+            supplier.setDelay(delay);
+        }
+        notifyAll();
+    }
+    public synchronized void resetBodySuppliersDelay(Delay delay) {
+        for (Supplier<Body> supplier : bodySuppliers) {
+            supplier.setDelay(delay);
+        }
+        notifyAll();
+    }
+    public synchronized void resetEngineSuppliersDelay(Delay delay) {
+        for (Supplier<Engine> supplier : engineSuppliers) {
+            supplier.setDelay(delay);
+        }
+        notifyAll();
+    }
     private void createThreads() {
         try {
             int accessorySuppliersCount = Integer.parseInt(properties.getProperty("AccessorySuppliers"));

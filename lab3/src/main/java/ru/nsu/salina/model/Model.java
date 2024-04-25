@@ -48,7 +48,7 @@ public class Model implements AutoCloseable{
         } else {
             this.player.move();
             controlPlayer();
-            updateMeteors();
+                updateMeteors();
             increaseScore();
         }
         notifyUnsafe();

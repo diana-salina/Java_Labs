@@ -19,8 +19,8 @@ public class Storage<T> implements Container<T> {
                 //TODO close threads
             }
         }
-        this.notifyAll();
         items.add(item);
+        this.notifyAll();
     }
     public synchronized T take() {
         while (isEmpty()) {
@@ -36,10 +36,10 @@ public class Storage<T> implements Container<T> {
         this.notifyAll();
         return item;
     }
-    public synchronized boolean isFull() {
+    public boolean isFull() {
         return size == items.size();
     }
-    public synchronized boolean isEmpty() {
+    public boolean isEmpty() {
         return items.isEmpty();
     }
 }
