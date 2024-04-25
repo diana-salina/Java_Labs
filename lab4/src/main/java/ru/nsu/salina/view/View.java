@@ -13,12 +13,17 @@ public class View extends JFrame {
     public View(CarFactory factory) {
         this.factory = factory;
         controller = new Controller(factory);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(close());
         setSize(width, height);
         setLocationRelativeTo(null);
         JPanel panel = new JPanel();
         addSliders(panel);
         add(panel);
+    }
+
+    private int close() {
+        factory.closeFactory();
+        return JFrame.EXIT_ON_CLOSE;
     }
 
     private void addSliders(JPanel panel) {

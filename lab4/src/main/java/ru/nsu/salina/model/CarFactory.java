@@ -70,7 +70,9 @@ public class CarFactory extends Thread{
         carController.interrupt();
     }
 
-    private void startThreads() {
+    public void closeFactory() {
+        closeThreads();
+        currentThread().interrupt();
     }
 
     public synchronized void resetWorkersDelay(Delay delay) {
