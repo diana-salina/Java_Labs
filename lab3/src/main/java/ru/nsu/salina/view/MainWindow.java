@@ -103,7 +103,6 @@ public class MainWindow extends JFrame implements ModelListener {
 
         }
     }
-
     private void setIcon() {
         Image icon = new ImageIcon("resources\\images\\icon.png").getImage();
         setIconImage(icon);
