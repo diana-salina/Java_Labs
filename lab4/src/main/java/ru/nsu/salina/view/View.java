@@ -13,7 +13,7 @@ public class View extends JFrame {
     public View(CarFactory factory) {
         this.factory = factory;
         controller = new Controller(factory);
-        setDefaultCloseOperation(close());
+        //setDefaultCloseOperation(close());
         setSize(width, height);
         setLocationRelativeTo(null);
         JPanel panel = new JPanel();

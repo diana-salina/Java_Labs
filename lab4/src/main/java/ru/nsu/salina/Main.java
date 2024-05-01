@@ -10,7 +10,7 @@ public class Main {
         CarFactory factory = new CarFactory("configFile.properties");
         SwingUtilities.invokeLater(() -> {
             JFrame view = new View(factory);
-            view.setVisible(true);
+            //view.setVisible(true);
         });
     }
 }

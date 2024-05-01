@@ -5,29 +5,29 @@ import ru.nsu.salina.model.car.Car;
 import ru.nsu.salina.model.storages.Storage;
 
 public class Dealer extends Thread{
-    private Storage<Car> carStorage;
+    private final Storage<Car> carStorage;
     private Delay delay;
+    private int ID;
 
-    public Dealer(Storage<Car> storage) {
+    public Dealer(Storage<Car> storage, int ID) {
         this.carStorage = storage;
+        this.ID = ID;
     }
     public void setDelay(Delay delay) {
         this.delay = delay;
     }
     @Override
     public void run() {
-        while (Thread.currentThread().isAlive()) {
+        /*while (!Thread.currentThread().isInterrupted()) {
             Car car = carStorage.take();
-
-            synchronized (carStorage) {
-                carStorage.notifyAll();
-            }
+            System.out.println((System.currentTimeMillis() / 1000) + ": Dealer " + ID +
+                    ": Auto " + car.getCarID() + car.getDetailsID());
 
             try {
                 Thread.sleep(delay.getDelay());
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-        }
+        }*/
     }
 }

@@ -1,6 +1,7 @@
 package ru.nsu.salina.model.suppliers;
 
 import ru.nsu.salina.model.Delay;
+import ru.nsu.salina.model.car.Car;
 import ru.nsu.salina.model.storages.Storage;
 
 import java.lang.reflect.Constructor;
@@ -19,7 +20,9 @@ public class Supplier<T> extends Thread{
     }
     @Override
     public void run() {
-        while(isAlive()) {
+
+        System.out.println(this.isInterrupted());
+        while(!Thread.currentThread().isInterrupted()) {
             T item = createItem();
             storage.put(item);
             try {
@@ -32,11 +35,11 @@ public class Supplier<T> extends Thread{
 
     private T createItem() {
         try {
-            Class<T> tClass = (Class<T>) Class.forName(productType);
+            Class<T> tClass = (Class<T>) Class.forName("ru.nsu.salina.model.car.parts." + productType);
             Constructor<T> tConstructor = tClass.getDeclaredConstructor();
             return tConstructor.newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
-            interrupt();
+            Thread.currentThread().interrupt();
             ex.printStackTrace();
         }
         return null;

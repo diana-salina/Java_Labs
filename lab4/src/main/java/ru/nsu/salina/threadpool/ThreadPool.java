@@ -1,23 +1,45 @@
 package ru.nsu.salina.threadpool;
 
-import ru.nsu.salina.model.Delay;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
 
-import java.util.concurrent.BlockingQueue;
-
-public class ThreadPool {
-    private BlockingQueue<Runnable> taskQueue;
-    private int threadsLimit;
-    public ThreadPool(int threadsLimit) { //TODO add BlockingQueue<Runnable> taskQueue
-        //this.taskQueue = taskQueue;
-        this.threadsLimit = threadsLimit;
+public class ThreadPool implements Executor {
+    private final Queue<Runnable> taskQueue;
+    private boolean isRunning;
+    private int threadNumb;
+    public ThreadPool(int threadNumb) {
+        this.threadNumb = threadNumb;
+        taskQueue = new ConcurrentLinkedQueue<>();
+        isRunning = true;
+        for (int i = 0; i < threadNumb; ++i) {
+            new Thread(new ThreadInPool()).start();
+        }
     }
 
-    public void start() {
+    @Override
+    public synchronized void execute(Runnable command) {
+        if (isRunning) {
+            taskQueue.offer(command);
+        }
+    }
+    public synchronized void shutdown() {
+        isRunning = false;
     }
 
-    public void interrupt() {
+    public int countTasksInQueue() {
+        return taskQueue.size();
     }
 
-    public void setDelay(Delay delay) {
+    private final class ThreadInPool implements Runnable {
+        @Override
+        public void run() {
+            while (isRunning) {
+                Runnable nextThread = taskQueue.poll();
+                if (nextThread != null) {
+                    nextThread.run();
+                }
+            }
+        }
     }
 }

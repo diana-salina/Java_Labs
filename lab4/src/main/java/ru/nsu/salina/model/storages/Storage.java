@@ -1,45 +1,50 @@
 package ru.nsu.salina.model.storages;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Storage<T> implements Container<T> {
     protected int size;
-    protected ArrayList<T> items;
+    protected final Queue<T> items;
     public Storage(int size) {
         this.size = size;
-        this.items = new ArrayList<>();
+        this.items = new LinkedList<>();
     }
     public synchronized void put(T item) {
-        while (isFull()) {
-            try {
-                this.wait();
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                ex.printStackTrace();
-                //TODO close threads
+            while (isFull()) {
+                try {
+                    items.wait();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                    //TODO close threads
+                }
             }
-        }
-        items.add(item);
-        this.notifyAll();
+            items.add(item);
+            System.out.println(item.toString() + "added");
+            items.notifyAll();
     }
     public synchronized T take() {
-        while (isEmpty()) {
-            try {
-                this.wait();
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                ex.printStackTrace();
-                //TODO close threads
+            while (isEmpty()) {
+                try {
+                    items.wait();
+                } catch (InterruptedException ex) {
+                    ex.getMessage();
+                    //TODO close threads
+                }
             }
-        }
-        T item = items.getFirst();
-        this.notifyAll();
-        return item;
+            var i = items.poll();
+            System.out.println(i.toString() + "taken");
+            items.notifyAll();
+            return i;
     }
-    public boolean isFull() {
+    public synchronized int getAvailablePlaces() {
+        return size - items.size();
+    }
+    public synchronized boolean isFull() {
         return size == items.size();
     }
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return items.isEmpty();
     }
 }

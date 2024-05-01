@@ -7,7 +7,6 @@ import ru.nsu.salina.model.car.parts.Engine;
 import ru.nsu.salina.model.dealers.Dealer;
 import ru.nsu.salina.model.storages.Storage;
 import ru.nsu.salina.model.suppliers.Supplier;
-import ru.nsu.salina.model.workers.Worker;
 import ru.nsu.salina.threadpool.ThreadPool;
 
 
@@ -31,6 +30,7 @@ public class CarFactory extends Thread{
     private Storage<Body> bodyStorage;
     private Storage<Accessory> accessoryStorage;
     private static final Delay defaultDelay = new Delay(1);
+    private Delay workerDelay = defaultDelay;
     private static final Properties properties = new Properties();
     public CarFactory(String configFile) {
         dealers = new LinkedList<>();
@@ -50,33 +50,33 @@ public class CarFactory extends Thread{
         }
         createStorages();
         createThreads();
-        carController = new CarController(carStorage, workers);
+        carController = new CarController(carStorage, workers, engineStorage,
+                bodyStorage, accessoryStorage, workerDelay);
     }
     @Override
     public void run() {
+
         for (Dealer dealer : dealers) dealer.start();
         for (Supplier<Accessory> supplier : accessorySuppliers) supplier.start();
         for (Supplier<Body> supplier : bodySuppliers) supplier.start();
         for (Supplier<Engine> supplier : engineSuppliers) supplier.start();
-        workers.start();
-        carController.start();
+        //carController.start();
     }
     public void closeThreads() {
         for (Dealer dealer : dealers) dealer.interrupt();
         for (Supplier<Accessory> supplier : accessorySuppliers) supplier.interrupt();
         for (Supplier<Body> supplier : bodySuppliers) supplier.interrupt();
         for (Supplier<Engine> supplier : engineSuppliers) supplier.interrupt();
-        workers.interrupt();
-        carController.interrupt();
+        //workers.shutdown();
+        //carController.interrupt();
     }
 
     public void closeFactory() {
         closeThreads();
         currentThread().interrupt();
     }
-
     public synchronized void resetWorkersDelay(Delay delay) {
-        workers.setDelay(delay);
+        workerDelay = delay;
         notifyAll();
     }
     public synchronized void resetDealersDelay(Delay delay) {
@@ -123,13 +123,13 @@ public class CarFactory extends Thread{
 
     private void createDealers(int dealersCount) {
         for (int i = 0; i < dealersCount; ++i) {
-            dealers.add(new Dealer(carStorage));
+            dealers.add(new Dealer(carStorage, i));
             dealers.getLast().setDelay(defaultDelay);
         }
     }
 
     private void createWorkers(int workersCount) {
-        workers = new ThreadPool(workersCount);
+        //workers = new ThreadPool(workersCount);
     }
 
     private void createEngineSuppliers(int engineSuppliersCount) {

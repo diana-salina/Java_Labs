@@ -21,4 +21,8 @@ public class Car{
         return carID;
     }
 
+    public String getDetailsID() {
+        return "(Body: " + body.getID() + ", Motor: " +
+                engine.getID() + ", Accessory: " + accessory.getID() + ")";
+    }
 }
