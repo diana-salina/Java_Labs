@@ -155,21 +155,21 @@ public class CarFactory extends Thread{
 
     private void createEngineSuppliers(int engineSuppliersCount) {
         for (int i = 0; i < engineSuppliersCount; ++i) {
-            engineSuppliers.add(new Supplier<>(engineStorage, "Engine", i));
+            engineSuppliers.add(new Supplier<>(engineStorage, "Engine", i, Engine::new));
             engineSuppliers.getLast().setDelay(defaultDelay);
         }
     }
 
     private void createBodySuppliers(int bodySuppliersCount) {
         for (int i = 0; i < bodySuppliersCount; ++i) {
-            bodySuppliers.add(new Supplier<>(bodyStorage, "Body", i));
+            bodySuppliers.add(new Supplier<>(bodyStorage, "Body", i, Body::new));
             bodySuppliers.getLast().setDelay(defaultDelay);
         }
     }
 
     private void createAccessorySuppliers(int accessorySuppliersCount) {
         for (int i = 0; i < accessorySuppliersCount; ++i) {
-            accessorySuppliers.add(new Supplier<>(accessoryStorage, "Accessory", i));
+            accessorySuppliers.add(new Supplier<>(accessoryStorage, "Accessory", i, Accessory::new));
             accessorySuppliers.getLast().setDelay(defaultDelay);
         }
     }
