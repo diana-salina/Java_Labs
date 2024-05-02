@@ -4,7 +4,7 @@ public class Engine implements Part{
     private static int id = 0;
     private String engineID;
     public Engine() {
-        engineID = "A" + id;
+        engineID = "E" + id;
         id++;
     }
     public String getID() {

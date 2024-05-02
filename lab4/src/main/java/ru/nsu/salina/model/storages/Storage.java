@@ -11,7 +11,8 @@ public class Storage<T> implements Container<T> {
         this.size = size;
         this.items = new LinkedList<>();
     }
-    public synchronized void put(T item) {
+    public void put(T item) {
+        synchronized (items) {
             while (isFull()) {
                 try {
                     items.wait();
@@ -21,10 +22,12 @@ public class Storage<T> implements Container<T> {
                 }
             }
             items.add(item);
-            System.out.println(item.toString() + "added");
+            System.out.println(item.toString() + " added");
             items.notifyAll();
+        }
     }
-    public synchronized T take() {
+    public T take() {
+        synchronized (items) {
             while (isEmpty()) {
                 try {
                     items.wait();
@@ -34,9 +37,10 @@ public class Storage<T> implements Container<T> {
                 }
             }
             var i = items.poll();
-            System.out.println(i.toString() + "taken");
+            System.out.println(i.toString() + " taken");
             items.notifyAll();
             return i;
+        }
     }
     public synchronized int getAvailablePlaces() {
         return size - items.size();
@@ -46,5 +50,9 @@ public class Storage<T> implements Container<T> {
     }
     public synchronized boolean isEmpty() {
         return items.isEmpty();
+    }
+
+    public synchronized int getAmount() {
+        return items.size();
     }
 }

@@ -19,20 +19,22 @@ import java.util.Properties;
 
 
 public class CarFactory extends Thread{
-    private LinkedList<Dealer> dealers;
+    private final LinkedList<Dealer> dealers;
     private ThreadPool workers;
-    private CarController carController;
-    private LinkedList<Supplier<Engine>> engineSuppliers;
-    private LinkedList<Supplier<Accessory>> accessorySuppliers;
-    private LinkedList<Supplier<Body>> bodySuppliers;
+    private final CarController carController;
+    private final LinkedList<Supplier<Engine>> engineSuppliers;
+    private final LinkedList<Supplier<Accessory>> accessorySuppliers;
+    private final LinkedList<Supplier<Body>> bodySuppliers;
     private Storage<Car> carStorage;
     private Storage<Engine> engineStorage;
     private Storage<Body> bodyStorage;
     private Storage<Accessory> accessoryStorage;
-    private static final Delay defaultDelay = new Delay(1);
+    private static final Delay defaultDelay = new Delay(3);
     private Delay workerDelay = defaultDelay;
     private static final Properties properties = new Properties();
+    private ModelListener listener;
     public CarFactory(String configFile) {
+        super("CarFactory");
         dealers = new LinkedList<>();
         engineSuppliers = new LinkedList<>();
         accessorySuppliers = new LinkedList<>();
@@ -52,6 +54,7 @@ public class CarFactory extends Thread{
         createThreads();
         carController = new CarController(carStorage, workers, engineStorage,
                 bodyStorage, accessoryStorage, workerDelay);
+        notifyUnsafe();
     }
     @Override
     public void run() {
@@ -60,20 +63,38 @@ public class CarFactory extends Thread{
         for (Supplier<Accessory> supplier : accessorySuppliers) supplier.start();
         for (Supplier<Body> supplier : bodySuppliers) supplier.start();
         for (Supplier<Engine> supplier : engineSuppliers) supplier.start();
-        //carController.start();
+        carController.start();
+        while(!Thread.currentThread().isInterrupted()) {
+            notifyUnsafe();
+            System.out.println(getAccessoryStorageAmount() +" "+ getBodyStorageAmount() +" "+
+                            getEngineStorageAmount() +" ALL: " + getCarStorageAmount());
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    public void setListener(ModelListener listener) {
+        this.listener = listener;
+    }
+
+    private void notifyUnsafe() {
+        if (listener != null) {
+            listener.onModelChanged();
+        }
     }
     public void closeThreads() {
         for (Dealer dealer : dealers) dealer.interrupt();
         for (Supplier<Accessory> supplier : accessorySuppliers) supplier.interrupt();
         for (Supplier<Body> supplier : bodySuppliers) supplier.interrupt();
         for (Supplier<Engine> supplier : engineSuppliers) supplier.interrupt();
-        //workers.shutdown();
-        //carController.interrupt();
+        workers.shutdown();
+        carController.interrupt();
     }
 
     public void closeFactory() {
         closeThreads();
-        currentThread().interrupt();
     }
     public synchronized void resetWorkersDelay(Delay delay) {
         workerDelay = delay;
@@ -129,26 +150,26 @@ public class CarFactory extends Thread{
     }
 
     private void createWorkers(int workersCount) {
-        //workers = new ThreadPool(workersCount);
+        workers = new ThreadPool(workersCount);
     }
 
     private void createEngineSuppliers(int engineSuppliersCount) {
         for (int i = 0; i < engineSuppliersCount; ++i) {
-            engineSuppliers.add(new Supplier<>(engineStorage, "Engine"));
+            engineSuppliers.add(new Supplier<>(engineStorage, "Engine", i));
             engineSuppliers.getLast().setDelay(defaultDelay);
         }
     }
 
     private void createBodySuppliers(int bodySuppliersCount) {
         for (int i = 0; i < bodySuppliersCount; ++i) {
-            bodySuppliers.add(new Supplier<>(bodyStorage, "Body"));
+            bodySuppliers.add(new Supplier<>(bodyStorage, "Body", i));
             bodySuppliers.getLast().setDelay(defaultDelay);
         }
     }
 
     private void createAccessorySuppliers(int accessorySuppliersCount) {
         for (int i = 0; i < accessorySuppliersCount; ++i) {
-            accessorySuppliers.add(new Supplier<>(accessoryStorage, "Accessory"));
+            accessorySuppliers.add(new Supplier<>(accessoryStorage, "Accessory", i));
             accessorySuppliers.getLast().setDelay(defaultDelay);
         }
     }
@@ -162,5 +183,18 @@ public class CarFactory extends Thread{
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public int getAccessoryStorageAmount() {
+        return accessoryStorage.getAmount();
+    }
+    public int getEngineStorageAmount() {
+        return engineStorage.getAmount();
+    }
+    public int getBodyStorageAmount() {
+        return bodyStorage.getAmount();
+    }
+    public int getCarStorageAmount() {
+        return carStorage.getAmount();
     }
 }

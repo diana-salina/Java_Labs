@@ -10,6 +10,7 @@ public class Dealer extends Thread{
     private int ID;
 
     public Dealer(Storage<Car> storage, int ID) {
+        super("Dealer №" + ID);
         this.carStorage = storage;
         this.ID = ID;
     }
@@ -18,7 +19,7 @@ public class Dealer extends Thread{
     }
     @Override
     public void run() {
-        /*while (!Thread.currentThread().isInterrupted()) {
+        while (!Thread.currentThread().isInterrupted()) {
             Car car = carStorage.take();
             System.out.println((System.currentTimeMillis() / 1000) + ": Dealer " + ID +
                     ": Auto " + car.getCarID() + car.getDetailsID());
@@ -28,6 +29,6 @@ public class Dealer extends Thread{
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-        }*/
+        }
     }
 }

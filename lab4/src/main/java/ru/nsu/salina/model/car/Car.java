@@ -22,7 +22,7 @@ public class Car{
     }
 
     public String getDetailsID() {
-        return "(Body: " + body.getID() + ", Motor: " +
+        return "(Body: " + body.getID() + ", Engine: " +
                 engine.getID() + ", Accessory: " + accessory.getID() + ")";
     }
 }

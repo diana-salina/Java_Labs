@@ -19,6 +19,7 @@ public class CarController extends Thread{
     public CarController (Storage<Car> carStorage, ThreadPool workersPool,
                           Storage<Engine> engineStorage, Storage<Body> bodyStorage,
                           Storage<Accessory> accessoryStorage, Delay workerDelay) {
+        super("CarController");
         this.carStorage = carStorage;
         this.workersPool = workersPool;
         this.engineStorage = engineStorage;
@@ -28,7 +29,7 @@ public class CarController extends Thread{
     }
     @Override
     public void run() {
-        while (Thread.currentThread().isAlive()) {
+        while (!Thread.currentThread().isInterrupted()) {
             synchronized (carStorage) {
                 while (workersPool.countTasksInQueue() >= carStorage.getAvailablePlaces()) {
                     try {
