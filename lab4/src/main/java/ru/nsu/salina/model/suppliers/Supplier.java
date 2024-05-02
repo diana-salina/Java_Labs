@@ -12,6 +12,7 @@ public class Supplier<T> extends Thread{
     private final String productType;
     private Delay delay;
     private final int ID;
+    private boolean isRunning;
     public Supplier(Storage<T> storage, String productType, int ID) {
         super("Supplier (" + productType + ") №" + ID);
         this.storage = storage;
@@ -19,13 +20,14 @@ public class Supplier<T> extends Thread{
         this.ID = ID;
     }
     public void setDelay(Delay delay) {
-        this.delay =delay;
+        this.delay = delay;
     }
+    public void shutdown() {isRunning = false;}
     @Override
     public void run() {
-
+        isRunning = true;
         //System.out.println(this.isInterrupted());
-        while(!Thread.currentThread().isInterrupted()) {
+        while(!Thread.currentThread().isInterrupted() || isRunning) {
             T item = createItem();
             storage.put(item);
             //System.out.println(" - Supplier (" + productType + ") №" + ID);

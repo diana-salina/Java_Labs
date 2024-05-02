@@ -16,6 +16,7 @@ public class CarController extends Thread{
     private final Storage<Body> bodyStorage;
     private final Storage<Accessory> accessoryStorage;
     private final Delay workerDelay;
+    private boolean isRunning;
     public CarController (Storage<Car> carStorage, ThreadPool workersPool,
                           Storage<Engine> engineStorage, Storage<Body> bodyStorage,
                           Storage<Accessory> accessoryStorage, Delay workerDelay) {
@@ -27,9 +28,11 @@ public class CarController extends Thread{
         this.accessoryStorage = accessoryStorage;
         this.workerDelay = workerDelay;
     }
+    public void shutdown() {isRunning = false;}
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        isRunning = true;
+        while (!Thread.currentThread().isInterrupted() || isRunning) {
             synchronized (carStorage) {
                 while (workersPool.countTasksInQueue() >= carStorage.getAvailablePlaces()) {
                     try {

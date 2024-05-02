@@ -85,12 +85,12 @@ public class CarFactory extends Thread{
         }
     }
     public void closeThreads() {
-        for (Dealer dealer : dealers) dealer.interrupt();
-        for (Supplier<Accessory> supplier : accessorySuppliers) supplier.interrupt();
-        for (Supplier<Body> supplier : bodySuppliers) supplier.interrupt();
-        for (Supplier<Engine> supplier : engineSuppliers) supplier.interrupt();
+        for (Dealer dealer : dealers) dealer.shutdown();
+        for (Supplier<Accessory> supplier : accessorySuppliers) supplier.shutdown();
+        for (Supplier<Body> supplier : bodySuppliers) supplier.shutdown();
+        for (Supplier<Engine> supplier : engineSuppliers) supplier.shutdown();
         workers.shutdown();
-        carController.interrupt();
+        carController.shutdown();
     }
 
     public void closeFactory() {

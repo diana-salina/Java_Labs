@@ -84,7 +84,7 @@ public class View extends JFrame implements ModelListener {
     }
 
     private JSlider createSlider(int ID) {
-        JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 20, 0);
+        JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 20, 1);
         slider.setPaintLabels(true);
         slider.setMajorTickSpacing(2);
         slider.setMinorTickSpacing(1);
