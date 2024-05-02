@@ -12,7 +12,7 @@ public class View extends JFrame implements ModelListener {
     private CarFactory factory;
     private Controller controller;
     private final int height = 420;
-    private final int width = 940;
+    private final int width = 740;
     public View(CarFactory factory) {
         this.factory = factory;
         controller = new Controller(factory);
@@ -59,7 +59,7 @@ public class View extends JFrame implements ModelListener {
 
     private void drawStorage(Graphics g, String itemType, int amount, int line) {
         g.setColor(Color.BLACK);
-        int rectX = width / 2;
+        int rectX = width / 5 * 3;
         int rectY = 15 + (height - 40) / 4 * line;
         g.fillRect(rectX, rectY, 150, 80);
         g.setColor((Color.WHITE));
