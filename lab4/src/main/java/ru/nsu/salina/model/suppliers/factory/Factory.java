@@ -22,6 +22,6 @@ public class Factory<T> {
         } catch (ClassCastException ex) {
             ex.printStackTrace();
         }
-        return null
+        return null;
     }
 }
