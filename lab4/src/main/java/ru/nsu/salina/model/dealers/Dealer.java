@@ -8,7 +8,7 @@ public class Dealer extends Thread{
     private final Storage<Car> carStorage;
     private Delay delay;
     private int ID;
-    private boolean isRunning;
+    private volatile boolean isRunning;
 
     public Dealer(Storage<Car> storage, int ID) {
         super("Dealer №" + ID);
@@ -28,7 +28,7 @@ public class Dealer extends Thread{
             flag = false;
         }
         isRunning = true;
-        while (!Thread.currentThread().isInterrupted() || isRunning) {
+        while (!Thread.currentThread().isInterrupted() && isRunning) {
             Car car = carStorage.take();
             System.out.println((System.currentTimeMillis() / 1000 - timeStart) + ": Dealer " + ID +
                     ": Auto " + car.getCarID() + car.getDetailsID());

@@ -13,7 +13,7 @@ public class Supplier<T> extends Thread{
     private final String productType;
     private Delay delay;
     private final int ID;
-    private boolean isRunning;
+    private volatile boolean isRunning;
     private final Factory<T> factory;
     public Supplier(Storage<T> storage, String productType, int ID) {
         super("Supplier (" + productType + ") №" + ID);
@@ -30,7 +30,7 @@ public class Supplier<T> extends Thread{
     public void run() {
         isRunning = true;
         //System.out.println(this.isInterrupted());
-        while(!Thread.currentThread().isInterrupted() || isRunning) {
+        while(!Thread.currentThread().isInterrupted() && isRunning) {
             T item = createItem();
             storage.put(item);
             //System.out.println(" - Supplier (" + productType + ") №" + ID);
