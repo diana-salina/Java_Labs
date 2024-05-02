@@ -32,6 +32,7 @@ public class Worker implements Runnable{
             Accessory accessory = accessoryStorage.take();
             Body body = bodyStorage.take();
             Car newCar = new Car(engine, body, accessory);
+            //System.out.println("worker");
             carStorage.put(newCar);
 
             try {

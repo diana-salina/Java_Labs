@@ -40,6 +40,7 @@ public class CarController extends Thread{
                     }
                 }
                 int necessityCount = carStorage.getAvailablePlaces() - workersPool.countTasksInQueue();
+                System.out.println("Workers alive: " + workersPool.countTasksInQueue());
                 for (int i = 0; i < necessityCount; ++i) {
                     workersPool.execute(new Worker(carStorage, engineStorage, accessoryStorage, bodyStorage, workerDelay));
                 }

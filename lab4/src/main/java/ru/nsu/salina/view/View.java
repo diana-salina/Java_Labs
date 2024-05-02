@@ -1,6 +1,7 @@
 package ru.nsu.salina.view;
 
 import ru.nsu.salina.controller.Controller;
+import ru.nsu.salina.controller.SliderController;
 import ru.nsu.salina.model.CarFactory;
 import ru.nsu.salina.model.ModelListener;
 
@@ -88,7 +89,7 @@ public class View extends JFrame implements ModelListener {
         slider.setMajorTickSpacing(2);
         slider.setMinorTickSpacing(1);
         slider.setPaintTicks(true);
-        slider.addChangeListener(new sliderController(ID));
+        slider.addChangeListener(new SliderController(factory, ID));
         return slider;
     }
 }

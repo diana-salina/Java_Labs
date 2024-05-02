@@ -66,10 +66,10 @@ public class CarFactory extends Thread{
         carController.start();
         while(!Thread.currentThread().isInterrupted()) {
             notifyUnsafe();
-            System.out.println(getAccessoryStorageAmount() +" "+ getBodyStorageAmount() +" "+
-                            getEngineStorageAmount() +" ALL: " + getCarStorageAmount());
+//            System.out.println(getAccessoryStorageAmount() +" "+ getBodyStorageAmount() +" "+
+//                            getEngineStorageAmount() +" ALL: " + getCarStorageAmount());
             try {
-                Thread.sleep(10);
+                Thread.sleep(3);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }

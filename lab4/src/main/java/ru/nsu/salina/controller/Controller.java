@@ -10,11 +10,9 @@ import java.awt.event.WindowListener;
 
 public class Controller extends WindowAdapter {
     private CarFactory factory;
-    private int ID;
-    public Controller(CarFactory factory, int ID) {
+    public Controller(CarFactory factory) {
         this.factory = factory;
         factory.start();
-        this.ID = ID;
     }
 
     @Override

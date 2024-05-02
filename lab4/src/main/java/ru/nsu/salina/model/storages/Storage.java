@@ -22,7 +22,7 @@ public class Storage<T> implements Container<T> {
                 }
             }
             items.add(item);
-            System.out.println(item.toString() + " added");
+            //System.out.println(item.toString() + " added");
             items.notifyAll();
         }
     }
@@ -37,7 +37,7 @@ public class Storage<T> implements Container<T> {
                 }
             }
             var i = items.poll();
-            System.out.println(i.toString() + " taken");
+            //System.out.println(i.toString() + " taken");
             items.notifyAll();
             return i;
         }

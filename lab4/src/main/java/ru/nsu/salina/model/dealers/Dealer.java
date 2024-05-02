@@ -19,9 +19,15 @@ public class Dealer extends Thread{
     }
     @Override
     public void run() {
+        boolean flag = true;
+        long timeStart = 0;
+        if (flag) {
+            timeStart = System.currentTimeMillis() / 1000;
+            flag = false;
+        }
         while (!Thread.currentThread().isInterrupted()) {
             Car car = carStorage.take();
-            System.out.println((System.currentTimeMillis() / 1000) + ": Dealer " + ID +
+            System.out.println((System.currentTimeMillis() / 1000 - timeStart) + ": Dealer " + ID +
                     ": Auto " + car.getCarID() + car.getDetailsID());
 
             try {
