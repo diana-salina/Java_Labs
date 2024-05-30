@@ -40,7 +40,7 @@ public class ClientThread extends Thread{
                 String json = (String) in.readObject();
                 Message message = gson.fromJson(json, Message.class);
                 if (message == null) {
-                    logger.info("Client exited with empty message");
+                    logger.info("NULL message error");
                     this.close();
                     break;
                 }
@@ -48,10 +48,12 @@ public class ClientThread extends Thread{
                 switch (type) {
                     case BASIC_MASSAGE:
                         lastActivity = System.currentTimeMillis();
-                        server.broadcast(message);
+                        server.broadcast(message, this);
+                        logger.info("Basic massage is broadcast");
                     case PING_MASSAGE:
                         lastActivity = System.currentTimeMillis();
                         sendMessage(message);
+                        logger.info("Ping massage is sent");
 
                 }
             } catch (IOException | ClassNotFoundException ex) {
@@ -69,6 +71,7 @@ public class ClientThread extends Thread{
             out.writeObject(json);
             out.flush();
         } catch (IOException ex){
+            logger.warning("Error while sending message in Client thread");
             ex.printStackTrace();
         }
     }
@@ -87,7 +90,9 @@ public class ClientThread extends Thread{
             out.close();
             socket.close();
             server.closeChecker();
+            logger.info("Client thread closed successfully");
         } catch (IOException ex) {
+            logger.warning("Error while closing Client Thread");
             ex.printStackTrace();
         }
     }

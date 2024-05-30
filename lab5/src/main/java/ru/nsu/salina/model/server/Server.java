@@ -5,12 +5,16 @@ import ru.nsu.salina.model.message.Message;
 import ru.nsu.salina.model.message.MessageType;
 import ru.nsu.salina.model.server.handler.ClientThread;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 public class Server {
@@ -33,15 +37,12 @@ public class Server {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             logger.info("Server is opened on port №" + port);
-            //System.out.println("Server is opened on port №" + port);
             timeOutChecker = new TimeOutChecker(clients);
             timeOutChecker.start();
             while(isRunning) {
                 logger.info("server is waiting for clients");
-                //System.out.println("Waiting for clients...");
                 Socket socket = serverSocket.accept();
                 logger.info("Client <name> is connected");//TODO name
-                //System.out.println("Somebody is connected");
                 ClientThread client = new ClientThread(this, socket, gson);
                 clients.add(client);
                 sendHistoryToClient(client);
@@ -57,8 +58,18 @@ public class Server {
         }
     }
     public static void main(String[] args) {
+        Properties properties = new Properties();
         try {
-            int port = 8080;
+            File file = new File("configFile.properties");
+            if (!file.exists()) {
+                throw new FileNotFoundException();
+            }
+            properties.load(new FileReader(file));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            int port = Integer.parseInt(properties.getProperty(properties.getProperty("port")));
             Server server = new Server(port);
             server.start();
         } catch (Exception ex) {
@@ -66,10 +77,12 @@ public class Server {
             System.out.println("Server cannot be started");
         }
     }
-    public synchronized void broadcast(Message message) {
+    public synchronized void broadcast(Message message, ClientThread owner) {
         for (ClientThread client : clients) {
             try {
-                client.sendMessage(message);
+                if (client != owner) {
+                    client.sendMessage(message);
+                }
             } catch (IOException ex) {
                 logger.warning("ERROR: " + ex.getMessage());
             }
@@ -78,7 +91,7 @@ public class Server {
     }
     public synchronized void removeClient(ClientThread client) {
         String text = "client" + client.getSocket() + " disconnected";
-        broadcast(new Message("server", text, MessageType.BASIC_MASSAGE));
+        broadcast(new Message("server", text, MessageType.BASIC_MASSAGE), null);
         System.out.println("Client disconnected: " + client.getSocket());
         clients.remove(client);
         client.close();

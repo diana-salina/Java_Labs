@@ -8,6 +8,7 @@ import ru.nsu.salina.model.message.MessageType;
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class Client {
@@ -57,8 +58,18 @@ public class Client {
 //        });
 //    }
     public static void main(String[] args) {
-        int port = 8080;
-        String serverAddress = "localhost";
+        Properties properties = new Properties();
+        try {
+            File file = new File("configFile.properties");
+            if (!file.exists()) {
+                throw new FileNotFoundException();
+            }
+            properties.load(new FileReader(file));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        int port = Integer.parseInt(properties.getProperty("port"));
+        String serverAddress = properties.getProperty("ip");
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter your nickname: ");
         String name = scanner.nextLine();
