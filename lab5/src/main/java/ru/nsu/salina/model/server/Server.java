@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 public class Server {
     private List<ClientThread> clients;
+    private List<String> clientNames;
     private List<Message> messageHistory;
     private final int port;
     private TimeOutChecker timeOutChecker;
@@ -28,6 +29,7 @@ public class Server {
     public Server(int port) {
         this.port = port;
         clients = new ArrayList<>();
+        clientNames = new ArrayList<>();
         messageHistory = new LinkedList<>();
         gson = new Gson();
         logger = Logger.getLogger(Server.class.getName());
@@ -42,10 +44,16 @@ public class Server {
             while(isRunning) {
                 logger.info("server is waiting for clients");
                 Socket socket = serverSocket.accept();
-                logger.info("Client <name> is connected");//TODO name
                 ClientThread client = new ClientThread(this, socket, gson);
                 clients.add(client);
                 sendHistoryToClient(client);
+                String name = client.getNick();
+                if (clientNames.contains(name)) {
+                    logger.info("Client " + name + " is connected");
+                } else {
+                    clientNames.add(name);
+                    logger.info("NEW CLIENT " + name + " is connected");
+                }
                 client.start();
             }
             serverSocket.close();
@@ -60,7 +68,7 @@ public class Server {
     public static void main(String[] args) {
         Properties properties = new Properties();
         try {
-            File file = new File("configFile.properties");
+            File file = new File("configfile.properties");
             if (!file.exists()) {
                 throw new FileNotFoundException();
             }
@@ -69,7 +77,7 @@ public class Server {
             ex.printStackTrace();
         }
         try {
-            int port = Integer.parseInt(properties.getProperty(properties.getProperty("port")));
+            int port = Integer.parseInt(properties.getProperty("port"));
             Server server = new Server(port);
             server.start();
         } catch (Exception ex) {

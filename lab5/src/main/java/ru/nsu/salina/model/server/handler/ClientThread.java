@@ -35,6 +35,7 @@ public class ClientThread extends Thread{
     }
     @Override
     public void run() {
+        getNick();
         while (isConnected) {
             try {
                 String json = (String) in.readObject();
@@ -62,6 +63,19 @@ public class ClientThread extends Thread{
                 break;
             }
         }
+    }
+    public String getNick() {
+        Message message = null;
+        try {
+            while (message == null || message.getContent() == null) {
+                String json = (String) in.readObject();
+                message = gson.fromJson(json, Message.class);
+            }
+            return message.getContent();
+        } catch (IOException | ClassNotFoundException ex) {
+            logger.warning("Get nick error");
+        }
+        return null;
     }
 
     public void sendMessage(Message message) throws IOException{

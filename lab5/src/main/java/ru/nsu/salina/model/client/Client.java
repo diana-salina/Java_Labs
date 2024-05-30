@@ -23,16 +23,16 @@ public class Client {
     private long lastActivity;
     private boolean isExisted;
     //private View view;
-    public Client(String server, int port, String clientName) {
+    public Client(String server, int port) {
         System.out.println("Connecting to the server...");
         this.server = server;
         this.port = port;
-        this.clientName = clientName;
+        //this.clientName = clientName;
         isExisted = true;
     }
-//    public void setName() {
-//        this.clientName = view.getName();
-//    }
+    public void setName(String name) {
+        this.clientName = name;//view.getName();
+    }
     public void start() {
         gson = new Gson();
         try {
@@ -70,11 +70,11 @@ public class Client {
         }
         int port = Integer.parseInt(properties.getProperty("port"));
         String serverAddress = properties.getProperty("ip");
+
+        Client client = new Client(serverAddress, port);
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter your nickname: ");
-        String name = scanner.nextLine();
-
-        Client client = new Client(serverAddress, port, name);
+        client.setName(scanner.nextLine());
         client.start();
         while (client.isExisted) {
             if (client.getSocket().isClosed()) {

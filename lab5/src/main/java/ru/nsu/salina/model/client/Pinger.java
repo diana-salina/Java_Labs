@@ -14,6 +14,12 @@ public class Pinger extends Thread{
     }
     @Override
     public void run() {
+        Message name = new Message(client.getName(), client.getName(), MessageType.PING_MASSAGE);
+        try {
+            client.sendMessage(name);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
         while (!Thread.interrupted()) {
             try {
                 client.sendMessage(new Message(client.getName(), "ping", MessageType.PING_MASSAGE));
