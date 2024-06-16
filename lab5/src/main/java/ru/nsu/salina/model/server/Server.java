@@ -23,7 +23,6 @@ public class Server {
     private final List<ClientInfo> clients;
     private List<String> messageHistory;
     private final int port;
-    private TimeOutChecker timeOutChecker;
     private Logger logger;
     public Server(int port) {
         this.port = port;
@@ -39,8 +38,6 @@ public class Server {
         try {
             serverSocket = new ServerSocket(port);
             logger.info("Server is opened on port №" + port);
-            timeOutChecker = new TimeOutChecker(clientThreads);
-            timeOutChecker.start();
             while(isRunning) {
                 logger.info("server is waiting for clients");
                 Socket socket = serverSocket.accept();
@@ -90,11 +87,6 @@ public class Server {
             System.out.println("Server cannot be started");
         }
     }
-
-    public void closeChecker() {
-        timeOutChecker.stopWork();
-    }
-
     public boolean checkNewClient(String name, String password, ClientInfo clientInfo) {
         synchronized (clients) {
             for (Pair<String, String> client : clientsBase) {
