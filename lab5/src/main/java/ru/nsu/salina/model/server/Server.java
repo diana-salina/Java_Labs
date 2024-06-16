@@ -114,9 +114,9 @@ public class Server {
         }
     }
 
-    public void removeClient(ClientThread clientThread) {
-        synchronized (clientThread) {
-            clientThreads.remove(clientThread);
+    public void removeClient(ClientInfo client) {
+        synchronized (clients) {
+            clientThreads.remove(client);
         }
     }
 

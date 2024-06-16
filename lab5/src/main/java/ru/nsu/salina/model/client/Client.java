@@ -100,35 +100,14 @@ public class Client implements AutoCloseable{
             ex.printStackTrace();
         }
     }
-    public void setName(String name) {
-        this.clientName = name;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
     public String getName() {
         return clientName;
     }
 
-    public void setUnexisted() {
-        isExisted = false;
-    }
-
-    public Socket getSocket() {
-        return socket;
-    }
-    @Override
     public void close() throws InterruptedException{
         disconnect();
     }
 
-    public void setActivity() {
-        lastActivity = System.currentTimeMillis();
-    }
-
-    public long getLastActivity() {
-        return lastActivity;
-    }
     public void addToMassageHistory(Message message) {
         synchronized (messages) {
             messages.add(message);

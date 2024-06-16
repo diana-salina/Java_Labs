@@ -87,15 +87,15 @@ public class ClientThread extends Thread{
         try {
             String type = doc.getDocumentElement().getAttribute("name");
             switch (type) {
-                case "login":
+                case "login" -> {
                     login(doc);
-                    break;
-                case "message":
+                }
+                case "message" -> {
                     message(doc);
-                    break;
-                case "logout":
+                }
+                case "logout" -> {
                     logout(doc);
-                    break;
+                }
             }
         } catch (Exception ex) {
             logger.warning("ERROR executing doc" + ex.getMessage());
@@ -109,7 +109,7 @@ public class ClientThread extends Thread{
         try {
             clientInfo.send("<success></success>");
             clientInfo.close();
-            server.removeClient(this);
+            server.removeClient(clientInfo);
             logger.info("Client " + clientInfo.getName() + " log out");
             server.sendAll("<event name=\"logout\"><name>"+clientInfo.getName()+"</name></event>");
         } catch (Exception ex) {
@@ -158,7 +158,7 @@ public class ClientThread extends Thread{
     }
 
     public void sendSignalToClose() {
-        server.removeClient(this);
+        server.removeClient(clientInfo);
     }
     public void close() {
         try {

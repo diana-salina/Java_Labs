@@ -3,6 +3,7 @@ package ru.nsu.salina.model.server;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ClientInfo {
     private String name;
@@ -21,11 +22,17 @@ public class ClientInfo {
         return name;
     }
     public void send(String message) {
-        int len = message.getBytes().length;
         try {
             if (out != null) {
+                int len = message.getBytes().length;
                 out.writeInt(len);
                 out.write(message.getBytes(), 0, len);
+            }
+        } catch (SocketException ex) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         } catch (IOException ex) {
             ex.printStackTrace();

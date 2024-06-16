@@ -38,11 +38,7 @@ public class Listener extends Thread{
             Document doc;
             while (!socket.isClosed() && !Thread.interrupted()) {
                 try {
-                    try {
-                        messageLen = in.readInt();
-                    } catch (EOFException ex) {
-                        continue;
-                    }
+                    messageLen = in.readInt();
                     if (messageLen == -1) continue;
                     byte[] byteMessage = new byte[messageLen];
                     int isRead = in.read(byteMessage, 0, messageLen);
@@ -94,6 +90,7 @@ public class Listener extends Thread{
                         }
                     }
                     client.onModelChanged();
+                    System.out.println("message: " + message);
                 } catch (IOException | SAXException ex) {
                     ex.printStackTrace();
                 }

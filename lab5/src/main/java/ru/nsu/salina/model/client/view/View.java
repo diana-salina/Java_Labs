@@ -1,5 +1,6 @@
 package ru.nsu.salina.model.client.view;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -59,19 +60,19 @@ public class View extends Stage implements ModelListener {
         send.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                if (client.getSucceed()) {
-                    client.setSucceed(false);
-                    client.message(message.getText());
-                    message.clear();
-                }
+                System.out.println("send tapped");
+                client.setSucceed(false);
+                client.message(message.getText());
+                message.clear();
             }
         });
         logout.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                System.out.println("log out tapped");
                 if (client.getSucceed()) {
                     client.setSucceed(false);
-                    loginProcess = true;
+                    logoutProcess = true;
                     client.logout();
                 }
             }
@@ -115,23 +116,24 @@ public class View extends Stage implements ModelListener {
 
     @Override
     public void onModelChanged() {
-        if (loginProcess && client.getSucceed()) {
-            loginProcess = false;
-            client.setSucceed(false);
-            setChatVisible();
-        }
-        if (logoutProcess && client.getSucceed()) {
-            logoutProcess = false;
-            client.setSucceed(false);
-            client.disconnect();
-            client.getMassageHistory().clear();
-            setLoginVisible();
-        }
-        history.getItems().clear();
-        List<Message> messages = client.getMassageHistory();
-        for (Message message : messages) {
-            history.getItems().add(new HBox(new Label(message.getMessage() + "\n")));
-        }
-
+        Platform.runLater(() -> {
+            if (loginProcess && client.getSucceed()) {
+                loginProcess = false;
+                client.setSucceed(false);
+                setChatVisible();
+            }
+            if (logoutProcess && client.getSucceed()) {
+                logoutProcess = false;
+                client.setSucceed(false);
+                client.disconnect();
+                client.getMassageHistory().clear();
+                setLoginVisible();
+            }
+            history.getItems().clear();
+            List<Message> messages = client.getMassageHistory();
+            for (Message message : messages) {
+                history.getItems().add(new HBox(new Label(message.getMessage() + "\n")));
+            }
+        });
     }
 }
