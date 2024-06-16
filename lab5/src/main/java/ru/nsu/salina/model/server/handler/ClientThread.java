@@ -164,7 +164,6 @@ public class ClientThread extends Thread{
         try {
             isConnected = false;
             socket.close();
-            server.closeChecker();
             logger.info("Client thread closed successfully");
         } catch (IOException ex) {
             logger.warning("Error while closing Client Thread");
