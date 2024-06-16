@@ -1,10 +1,15 @@
 package ru.nsu.salina.model.server.handler;
 
-import com.google.gson.Gson;
+import org.w3c.dom.Node;
 import ru.nsu.salina.model.message.Message;
 import ru.nsu.salina.model.message.MessageType;
+import ru.nsu.salina.model.server.ClientInfo;
 import ru.nsu.salina.model.server.Server;
 
+import org.w3c.dom.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.Socket;
 import java.util.logging.Logger;
@@ -12,83 +17,141 @@ import java.util.logging.Logger;
 public class ClientThread extends Thread{
     private final Socket socket;
     private final Server server;
+    private final ClientInfo clientInfo;
     private long lastActivity;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
+    private DocumentBuilderFactory factory;
+    private DocumentBuilder builder;
     private boolean isConnected;
-    private final Gson gson;
     private final Logger logger;
-    //private String name;
-    public ClientThread(Server server, Socket socket, Gson gson) {
+    public ClientThread(Server server, Socket socket, ClientInfo clientInfo) {
         this.socket = socket;
         this.server = server;
-        this.gson = gson;
+        this.clientInfo = clientInfo;
         isConnected = true;
         lastActivity = 0;
         logger = Logger.getLogger(ClientThread.class.getName());
-        try {
-            in = new ObjectInputStream(socket.getInputStream());
-            out = new ObjectOutputStream(socket.getOutputStream());
-        } catch (IOException ex) {
-            logger.warning("ERROR: Client cannot open streams with exception " + ex.getMessage());
-        }
     }
     @Override
     public void run() {
-        getNick();
+        DataInputStream in = null;
+        try {
+            in = new DataInputStream(socket.getInputStream());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        factory = DocumentBuilderFactory.newInstance();
+        try {
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException ex) {
+            logger.warning("ERROR in creating builder");
+        }
+        int messageLen = 0;
+
         while (isConnected) {
             try {
-                String json = (String) in.readObject();
-                Message message = gson.fromJson(json, Message.class);
-                if (message == null) {
-                    logger.info("NULL message error");
-                    this.close();
-                    break;
+                messageLen = in.readInt();
+                byte[] message;
+                try {
+                    message = new byte[messageLen];
+                    int readRes = in.read(message, 0, messageLen);
+                    if (readRes == -1) {
+                        logger.warning("ERROR reading message");
+                        continue;
+                    }
+                } catch (Exception ex) {
+                    logger.warning("ERROR creating byte array with len" + messageLen);
+                    continue;
                 }
-                MessageType type = message.getType();
-                switch (type) {
-                    case BASIC_MASSAGE:
-                        lastActivity = System.currentTimeMillis();
-                        server.broadcast(message, this);
-                        logger.info("Basic massage is broadcast");
-                    case PING_MASSAGE:
-                        lastActivity = System.currentTimeMillis();
-                        sendMessage(message);
-                        logger.info("Ping massage is sent");
 
+                try {
+                    Document doc = builder.parse(new ByteArrayInputStream(message, 0, messageLen));
+                    execute(doc);
+                } catch (Exception ex) {
+                    logger.warning("ERROR creating doc: " + ex.getMessage());
                 }
-            } catch (IOException | ClassNotFoundException ex) {
+            } catch (EOFException ex) {
+                continue;
+            } catch (IOException ex) {
                 logger.warning("Error while running Client Thread: " + ex.getClass());
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 this.close();
                 break;
             }
         }
     }
-    public String getNick() {
-        Message message = null;
+    private void execute(Document doc) {
         try {
-            while (message == null || message.getContent() == null) {
-                String json = (String) in.readObject();
-                message = gson.fromJson(json, Message.class);
+            String type = doc.getDocumentElement().getAttribute("name");
+            switch (type) {
+                case "login":
+                    login(doc);
+                    break;
+                case "message":
+                    message(doc);
+                    break;
+                case "logout":
+                    logout(doc);
+                    break;
             }
-            return message.getContent();
-        } catch (IOException | ClassNotFoundException ex) {
-            logger.warning("Get nick error");
+        } catch (Exception ex) {
+            logger.warning("ERROR executing doc" + ex.getMessage());
         }
-        return null;
+    }
+    private Node getNode(Document doc, String name) {
+        return doc.getElementsByTagName(name).item(0);
     }
 
-    public void sendMessage(Message message) throws IOException{
-        if (socket.isClosed()) return;
-        String json = gson.toJson(message);
+    private void logout(Document doc) {
         try {
-            out.writeObject(json);
-            out.flush();
-        } catch (IOException ex){
-            logger.warning("Error while sending message in Client thread");
+            clientInfo.send("<success></success>");
+            clientInfo.close();
+            server.removeClient(this);
+            logger.info("Client " + clientInfo.getName() + " log out");
+            server.sendAll("<event name=\"logout\"><name>"+clientInfo.getName()+"</name></event>");
+        } catch (Exception ex) {
+            logger.warning("ERROR logging out");
+        }
+    }
+
+    private void message(Document doc) {
+        try {
+            String text = null;
+            Node node = getNode(doc, "message");
+            if (node != null) {
+                text = node.getTextContent();
+            }
+            server.sendAll("<event name=\"message\"><from>"+clientInfo.getName()+"</from><message>"+text+"</message></event>");
+            clientInfo.send("<success></success>");
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
+
+    private void login(Document doc) {
+        try {
+            String name = null, password = null;
+            Node node = getNode(doc, "name");
+            if (node != null) {
+                name = node.getTextContent();
+            }
+            node = getNode(doc, "password");
+            if (node != null) {
+                password = node.getTextContent();
+            }
+            boolean isChecked = server.checkNewClient(name, password, clientInfo);
+            if (isChecked) {
+                logger.info("client " + name + " connected");
+                clientInfo.send("<success></success>");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 
     public long getLastActivity() {
         return lastActivity;
@@ -100,8 +163,6 @@ public class ClientThread extends Thread{
     public void close() {
         try {
             isConnected = false;
-            in.close();
-            out.close();
             socket.close();
             server.closeChecker();
             logger.info("Client thread closed successfully");

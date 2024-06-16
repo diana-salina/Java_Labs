@@ -1,6 +1,6 @@
 package ru.nsu.salina.model.server;
 
-import com.google.gson.Gson;
+import javafx.util.Pair;
 import ru.nsu.salina.model.message.Message;
 import ru.nsu.salina.model.message.MessageType;
 import ru.nsu.salina.model.server.handler.ClientThread;
@@ -18,51 +18,56 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 public class Server {
-    private List<ClientThread> clients;
-    private List<String> clientNames;
-    private List<Message> messageHistory;
+    private List<ClientThread> clientThreads;
+    private List<Pair<String, String>> clientsBase;
+    private final List<ClientInfo> clients;
+    private List<String> messageHistory;
     private final int port;
     private TimeOutChecker timeOutChecker;
     private Logger logger;
-    private Gson gson;
-
     public Server(int port) {
         this.port = port;
+        clientThreads = new ArrayList<>();
         clients = new ArrayList<>();
-        clientNames = new ArrayList<>();
-        messageHistory = new LinkedList<>();
-        gson = new Gson();
+        clientsBase = new ArrayList<>();
+        messageHistory = new ArrayList<>();
         logger = Logger.getLogger(Server.class.getName());
     }
     public void start() {
         boolean isRunning = true;
+        ServerSocket serverSocket = null;
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
+            serverSocket = new ServerSocket(port);
             logger.info("Server is opened on port №" + port);
-            timeOutChecker = new TimeOutChecker(clients);
+            timeOutChecker = new TimeOutChecker(clientThreads);
             timeOutChecker.start();
             while(isRunning) {
                 logger.info("server is waiting for clients");
                 Socket socket = serverSocket.accept();
-                ClientThread client = new ClientThread(this, socket, gson);
-                clients.add(client);
-                sendHistoryToClient(client);
-                String name = client.getNick();
-                if (clientNames.contains(name)) {
-                    logger.info("Client " + name + " is connected");
-                } else {
-                    clientNames.add(name);
-                    logger.info("NEW CLIENT " + name + " is connected");
+                ClientInfo clientInfo = new ClientInfo("", socket);
+                synchronized (clients) {
+                    clients.add(clientInfo);
+                }
+                ClientThread client = new ClientThread(this, socket, clientInfo);
+                synchronized (clientThreads) {
+                    clientThreads.add(client);
                 }
                 client.start();
-            }
-            serverSocket.close();
-            for (ClientThread client : clients) {
-                client.close();
             }
         } catch (IOException ex) {
             logger.warning("ERROR: " + ex.getMessage());
             ex.printStackTrace();
+        } finally {
+            if (serverSocket != null) {
+                try {
+                    serverSocket.close();
+                } catch (IOException ex) {
+                    logger.warning("ERROR while closing server socket");
+                }
+            }
+            for (ClientThread client : clientThreads) {
+                client.close();
+            }
         }
     }
     public static void main(String[] args) {
@@ -85,42 +90,41 @@ public class Server {
             System.out.println("Server cannot be started");
         }
     }
-    public synchronized void broadcast(Message message, ClientThread owner) {
-        for (ClientThread client : clients) {
-            try {
-                if (client != owner) {
-                    client.sendMessage(message);
-                }
-            } catch (IOException ex) {
-                logger.warning("ERROR: " + ex.getMessage());
-            }
-        }
-        addToMessageHistory(message);
-    }
-    public synchronized void removeClient(ClientThread client) {
-        String text = "client" + client.getSocket() + " disconnected";
-        broadcast(new Message("server", text, MessageType.BASIC_MASSAGE), null);
-        System.out.println("Client disconnected: " + client.getSocket());
-        clients.remove(client);
-        client.close();
-    }
-    private synchronized void addToMessageHistory(Message message) {
-        messageHistory.addLast(message);
-        if (messageHistory.size() > 15) {
-            messageHistory.removeFirst();
-        }
-    }
-    private synchronized void sendHistoryToClient(ClientThread client) {
-        for (Message message : messageHistory) {
-            try {
-                client.sendMessage(message);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
 
     public void closeChecker() {
         timeOutChecker.stopWork();
+    }
+
+    public boolean checkNewClient(String name, String password, ClientInfo clientInfo) {
+        synchronized (clients) {
+            for (Pair<String, String> client : clientsBase) {
+                if (!client.getKey().equals(name)) {
+                    continue;
+                }
+                if (client.getValue().equals(password)) {
+                    clientInfo.setName(name);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            clientInfo.setName(name);
+            clientsBase.add(new Pair<>(clientInfo.getName(), password));
+            return true;
+        }
+    }
+
+    public void removeClient(ClientThread clientThread) {
+        synchronized (clientThread) {
+            clientThreads.remove(clientThread);
+        }
+    }
+
+    public void sendAll(String message) {
+        synchronized (clientThreads) {
+            for (ClientInfo client : clients) {
+                client.send(message);
+            }
+        }
     }
 }

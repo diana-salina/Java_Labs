@@ -1,63 +1,32 @@
 package ru.nsu.salina.model.client;
 
-import com.google.gson.Gson;
 //import ru.nsu.salina.model.client.view.View;
+import ru.nsu.salina.model.client.view.View;
 import ru.nsu.salina.model.message.Message;
-import ru.nsu.salina.model.message.MessageType;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class Client {
+public class Client implements AutoCloseable{
     private String clientName;
-    private String hashPassword;
-    private  ObjectOutputStream out;
-    private ObjectInputStream in;
-    private Gson gson;
+    private String password;
+    private  DataOutputStream out;
+    private ExecutorService executor;
+    private List<Message> messages;
     private Socket socket;
     private final String server;
     private final int port;
     private long lastActivity;
     private boolean isExisted;
-    //private View view;
-    public Client(String server, int port) {
-        System.out.println("Connecting to the server...");
-        this.server = server;
-        this.port = port;
-        //this.clientName = clientName;
-        isExisted = true;
-    }
-    public void setName(String name) {
-        this.clientName = name;//view.getName();
-    }
-    public void start() {
-        gson = new Gson();
-        try {
-            socket = new Socket(server, port);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        try {
-            out = new ObjectOutputStream(socket.getOutputStream());
-            in = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        Listener listener = new Listener(this);
-        listener.start();
-        Pinger pinger = new Pinger(this);
-        pinger.start();
-    }
-//    private void showView(Client client) {
-//        SwingUtilities.invokeLater(() -> {
-//            this.view = new View(client);
-//            view.setVisible(true);
-//        });
-//    }
-    public static void main(String[] args) {
+    private boolean isSucceed = false;
+    private View view;
+    private ModelListener listener;
+    public Client() {
         Properties properties = new Properties();
         try {
             File file = new File("configFile.properties");
@@ -71,40 +40,72 @@ public class Client {
         int port = Integer.parseInt(properties.getProperty("port"));
         String serverAddress = properties.getProperty("ip");
 
-        Client client = new Client(serverAddress, port);
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your nickname: ");
-        client.setName(scanner.nextLine());
-        client.start();
-        while (client.isExisted) {
-            if (client.getSocket().isClosed()) {
-                client.setUnexisted();
-                break;
-            }
-            String massage = scanner.nextLine();
-            try {
-                client.sendMessage(new Message(client.getName(), massage, MessageType.BASIC_MASSAGE));
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+        this.server = serverAddress;
+        this.port = port;
+        this.messages = new ArrayList<>();
+        isExisted = true;
+    }
+    public void connect() {
+        try {
+            socket = new Socket(server, port);
+            out = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-        scanner.close();
+        Listener listener = new Listener(this, socket);
+        executor = Executors.newCachedThreadPool();
+        executor.execute(listener);
     }
-
-    public void sendMessage(Message message) throws IOException{
-        String json = gson.toJson(message);
-        out.writeObject(json);
-        out.flush();
+    public void disconnect() {
+        try {
+            out.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        executor.shutdownNow();
+        try {
+            socket.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
-    public Message getMessage() throws IOException, ClassNotFoundException{
-        if (socket.isClosed() |
-                socket.isInputShutdown() |
-                socket.isOutputShutdown()) return null;
-        String json = (String)in.readObject();
-        if (json == null) return null;
-        return gson.fromJson(json, Message.class);
+    public void login(String name, String password) {
+        String message = "<command name=\"login\"><name>" + name + "</name><password>"
+                + password + "</password></command>";
+        try {
+            int len = message.getBytes().length;
+            out.writeInt(len);
+            out.write(message.getBytes(), 0, len);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
-
+    public void logout() {
+        String message = "<command name=\"logout\"></command>";
+        try {
+            int len = message.getBytes().length;
+            out.writeInt(len);
+            out.write(message.getBytes(), 0, len);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    public void message(String mes) {
+        String message = "<command name=\"message\"><message>" + mes + "</message></command>";
+        try {
+            int len = message.getBytes().length;
+            out.writeInt(len);
+            out.write(message.getBytes(), 0, len);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    public void setName(String name) {
+        this.clientName = name;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
     public String getName() {
         return clientName;
     }
@@ -116,15 +117,9 @@ public class Client {
     public Socket getSocket() {
         return socket;
     }
-    public void stop() {
-        try {
-            in.close();
-            out.close();
-            socket.close();
-            isExisted = false;
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+    @Override
+    public void close() throws InterruptedException{
+        disconnect();
     }
 
     public void setActivity() {
@@ -133,5 +128,28 @@ public class Client {
 
     public long getLastActivity() {
         return lastActivity;
+    }
+    public void addToMassageHistory(Message message) {
+        synchronized (messages) {
+            messages.add(message);
+        }
+    }
+    public List<Message> getMassageHistory() {
+        synchronized (messages) {
+            return new ArrayList<>(messages);
+        }
+    }
+    public void setSucceed(boolean flag) {
+        isSucceed = flag;
+    }
+    public boolean getSucceed() {
+        return isSucceed;
+    }
+
+    public void setListener(ModelListener listener) {
+        this.listener = listener;
+    }
+    public void onModelChanged() {
+        listener.onModelChanged();
     }
 }

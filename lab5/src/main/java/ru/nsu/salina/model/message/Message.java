@@ -16,7 +16,18 @@ public class Message {
     public String getName() {
         return  name;
     }
-    public String getContent() {
-        return content;
+    public String getMessage() {
+        switch (type) {
+            case MASSAGE -> {
+                return name + ": " + content;
+            }
+            case LOGIN -> {
+                return name + "connected";
+            }
+            case LOGOUT -> {
+                return name + "disconnected";
+            }
+        }
+        return null;
     }
 }
